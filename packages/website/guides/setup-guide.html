@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DH Field EMR — Setup Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Muli:wght@400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Muli', sans-serif; color: #1b1b1b; line-height: 1.7; max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+  h1, h2, h3 { font-family: 'Quicksand', sans-serif; color: #c2590a; }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  h2 { font-size: 20px; margin: 32px 0 12px; border-bottom: 2px solid #F79E0F; padding-bottom: 4px; }
+  h3 { font-size: 16px; margin: 20px 0 8px; color: #1b1b1b; }
+  p { margin-bottom: 12px; font-size: 14px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+  .step { background: #fff7ed; border-left: 4px solid #F79E0F; padding: 16px 20px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .step-num { font-family: 'Quicksand', sans-serif; font-weight: 700; color: #F79E0F; font-size: 13px; text-transform: uppercase; margin-bottom: 4px; }
+  .step p { margin-bottom: 8px; }
+  .warn { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 13px; }
+  .tip { background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 13px; }
+  ol, ul { margin: 8px 0 12px 24px; font-size: 14px; }
+  li { margin-bottom: 6px; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: 'SF Mono', Menlo, monospace; }
+  .code-block { background: #1f2937; color: #e5e7eb; padding: 16px; border-radius: 8px; font-size: 13px; font-family: 'SF Mono', Menlo, monospace; overflow-x: auto; margin: 12px 0; white-space: pre-wrap; }
+  .header { text-align: center; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid #e5e7eb; }
+  .header img { width: 64px; height: 64px; margin-bottom: 12px; }
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 12px; }
+  strong { color: #1b1b1b; }
+  a { color: #F79E0F; }
+  @media print { body { padding: 20px; } .step { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DH Field EMR</h1>
+  <div class="subtitle">Setup Guide for Organization Administrators</div>
+</div>
+
+<h2>Overview</h2>
+<p>This guide walks you through setting up DH Field EMR for your organization. The entire process takes about 15 minutes and requires:</p>
+<ul>
+  <li>A Mac computer</li>
+  <li>An internet connection</li>
+  <li>A free Supabase account (cloud database)</li>
+</ul>
+
+<p>After setup, your organization will have:</p>
+<ul>
+  <li>A cloud database for storing patient records</li>
+  <li>A desktop app installed on your first computer</li>
+  <li>A web portal for viewing data and managing configuration</li>
+</ul>
+
+<h2>Step 1: Create a Supabase Project</h2>
+
+<div class="step">
+  <div class="step-num">1.1 — Create Account</div>
+  <p>Go to <strong>supabase.com</strong> and sign up for a free account. You can use your email or sign in with GitHub.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">1.2 — Create a New Project</div>
+  <p>Once logged in, click <strong>"New Project"</strong>.</p>
+  <ol>
+    <li>Choose your organization (or create one)</li>
+    <li>Enter a project name (e.g., "DH EMR" or your organization's name)</li>
+    <li>Set a strong database password — <strong>save this somewhere safe</strong></li>
+    <li>Select the region closest to your deployment location</li>
+    <li>Click <strong>"Create new project"</strong></li>
+  </ol>
+  <p>Wait 1–2 minutes for the project to finish provisioning.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">1.3 — Get Your API Credentials</div>
+  <p>Once the project is ready:</p>
+  <ol>
+    <li>Go to <strong>Settings &gt; API</strong> in the left sidebar</li>
+    <li>Copy the <strong>Project URL</strong> — it looks like <code>https://abcdefg.supabase.co</code></li>
+    <li>Copy the <strong>anon public</strong> key — a long string starting with <code>eyJ</code></li>
+  </ol>
+  <p>Save both values. You'll need them for the app setup and portal deployment.</p>
+</div>
+
+<div class="warn"><strong>Important:</strong> Never share your <code>service_role</code> key. The EMR only uses the <code>anon</code> key.</div>
+
+<h2>Step 2: Install the Desktop App</h2>
+
+<div class="step">
+  <div class="step-num">2.1 — Download</div>
+  <p>Download <strong>DH Field EMR.dmg</strong> from the Damico Health website.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">2.2 — Install</div>
+  <ol>
+    <li>Open the downloaded <code>.dmg</code> file</li>
+    <li>Drag <strong>DH Field EMR</strong> into your <strong>Applications</strong> folder</li>
+    <li>Open the app from Applications</li>
+    <li>If macOS says the app is from an unidentified developer: go to <strong>System Settings &gt; Privacy &amp; Security</strong> and click <strong>"Open Anyway"</strong></li>
+  </ol>
+</div>
+
+<h2>Step 3: Run the Setup Wizard</h2>
+
+<p>When you first launch the app, the Setup Wizard will appear automatically.</p>
+
+<div class="step">
+  <div class="step-num">3.1 — Enter Credentials</div>
+  <p>Paste the <strong>Supabase URL</strong> and <strong>anon key</strong> from Step 1.3. Click <strong>"Test Connection"</strong> to verify.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">3.2 — Create Database Tables</div>
+  <p>The wizard will show a block of SQL. Click <strong>"Copy SQL to Clipboard"</strong>, then:</p>
+  <ol>
+    <li>Go to your Supabase dashboard</li>
+    <li>Click <strong>SQL Editor</strong> in the left sidebar</li>
+    <li>Click <strong>"New query"</strong></li>
+    <li>Paste the SQL and click <strong>"Run"</strong></li>
+    <li>You should see "Success. No rows returned" — that's correct</li>
+  </ol>
+  <p>Go back to the app and click <strong>"I've Run the SQL"</strong>.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">3.3 — Verify Tables</div>
+  <p>Click <strong>"Verify Tables"</strong>. The wizard will confirm that the <code>records</code>, <code>devices</code>, and <code>config</code> tables were created successfully.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">3.4 — Seed Default Configuration</div>
+  <p>Click <strong>"Seed Config"</strong>. This uploads the default formulary, sites, physicians, procedures, and referral types to your cloud database.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">3.5 — Register This Device</div>
+  <p>Enter a name for this computer (e.g., "Clinic Laptop 1", "Dr. Smith MacBook"). Click <strong>"Register Device"</strong>.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">3.6 — Done!</div>
+  <p>Click <strong>"Launch App"</strong>. You're ready to start creating patient encounters.</p>
+</div>
+
+<h2>Step 4: Deploy the Web Portal</h2>
+
+<p>The web portal lets you view all patient records from any browser and manage your organization's configuration (formulary, sites, providers, etc.).</p>
+
+<div class="step">
+  <div class="step-num">4.1 — Deploy to Vercel (Recommended)</div>
+  <ol>
+    <li>Go to <strong>vercel.com</strong> and create a free account</li>
+    <li>Click <strong>"Add New" &gt; "Project"</strong></li>
+    <li>Import the portal folder from the DH EMR repository (or upload the portal files)</li>
+    <li>Deploy — Vercel will give you a URL like <code>your-emr-portal.vercel.app</code></li>
+  </ol>
+  <p>When you open the portal, enter the same Supabase URL and anon key from Step 1.3.</p>
+</div>
+
+<div class="tip"><strong>Alternative:</strong> You can also host the portal on Netlify, GitHub Pages, or any static file host. It's just HTML, CSS, and JavaScript — no server required.</div>
+
+<h2>Step 5: Set Up Additional Computers</h2>
+
+<p>To add more machines to your organization:</p>
+<ol>
+  <li>Install the <code>.dmg</code> on the new computer</li>
+  <li>Launch the app — the Setup Wizard will appear</li>
+  <li>Enter the <strong>same Supabase URL and anon key</strong> as your first computer</li>
+  <li><strong>Skip the "Create Tables" and "Seed Config" steps</strong> — they're already done</li>
+  <li>Register the new device with a unique name</li>
+</ol>
+
+<div class="tip"><strong>Tip:</strong> All computers using the same Supabase credentials will automatically sync records with each other. Changes made on one device appear on others within 30 seconds.</div>
+
+<h2>Troubleshooting</h2>
+
+<h3>Connection Failed</h3>
+<p>Double-check your Supabase URL and anon key. The URL should start with <code>https://</code> and end with <code>.supabase.co</code>. The key starts with <code>eyJ</code>.</p>
+
+<h3>Tables Not Verified</h3>
+<p>Make sure you ran the full SQL block in the Supabase SQL Editor. Check for error messages in the SQL Editor output. If you see "relation already exists" warnings, that's fine — the tables were already created.</p>
+
+<h3>App Won't Open on macOS</h3>
+<p>Go to <strong>System Settings &gt; Privacy &amp; Security</strong>. Scroll down to find the blocked app message and click <strong>"Open Anyway"</strong>.</p>
+
+<h3>Sync Not Working</h3>
+<p>Check the sync indicator in the bottom-left of the app. If it shows an error, verify your internet connection and Supabase credentials. You can click the sync icon to force a sync.</p>
+
+<div class="footer">
+  <p>DH Field EMR &mdash; Damico Health Inc.<br>
+  For support, contact your organization administrator.</p>
+</div>
+
+</body>
+</html>

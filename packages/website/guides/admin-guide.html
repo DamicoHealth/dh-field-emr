@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DH Field EMR — Admin Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Muli:wght@400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Muli', sans-serif; color: #1b1b1b; line-height: 1.7; max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+  h1, h2, h3 { font-family: 'Quicksand', sans-serif; color: #c2590a; }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  h2 { font-size: 20px; margin: 32px 0 12px; border-bottom: 2px solid #F79E0F; padding-bottom: 4px; }
+  h3 { font-size: 16px; margin: 20px 0 8px; color: #1b1b1b; }
+  p { margin-bottom: 12px; font-size: 14px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+  .step { background: #fff7ed; border-left: 4px solid #F79E0F; padding: 16px 20px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .step-num { font-family: 'Quicksand', sans-serif; font-weight: 700; color: #F79E0F; font-size: 13px; text-transform: uppercase; margin-bottom: 4px; }
+  .step p { margin-bottom: 8px; }
+  .tip { background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 13px; }
+  .warn { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 13px; }
+  ol, ul { margin: 8px 0 12px 24px; font-size: 14px; }
+  li { margin-bottom: 6px; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  .header { text-align: center; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid #e5e7eb; }
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 12px; }
+  strong { color: #1b1b1b; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #fff7ed; text-align: left; padding: 8px 12px; border-bottom: 2px solid #F79E0F; font-family: 'Quicksand', sans-serif; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; }
+  @media print { body { padding: 20px; } .step { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DH Field EMR</h1>
+  <div class="subtitle">Administrator Guide — Portal &amp; Configuration Management</div>
+</div>
+
+<h2>Overview</h2>
+<p>The DH Field EMR Web Portal is your organization's command center. From the portal, you can:</p>
+<ul>
+  <li>View all patient records from every device</li>
+  <li>Analyze data with charts and statistics</li>
+  <li>Manage configuration — formulary, clinic sites, providers, procedures, and referral types</li>
+  <li>Monitor registered devices and their sync status</li>
+</ul>
+
+<p>Changes made in the portal sync automatically to all desktop devices within 30 seconds.</p>
+
+<h2>Accessing the Portal</h2>
+
+<h3>First-Time Setup</h3>
+<p>When you first open the portal, you'll be prompted to enter your Supabase credentials:</p>
+<ol>
+  <li>Enter your <strong>Supabase URL</strong> (e.g., <code>https://abcdefg.supabase.co</code>)</li>
+  <li>Enter your <strong>anon key</strong> (starts with <code>eyJ</code>)</li>
+  <li>Click <strong>"Connect"</strong></li>
+</ol>
+<p>These credentials are saved in your browser's local storage. You won't need to enter them again on the same browser.</p>
+
+<h3>Resetting Credentials</h3>
+<p>To disconnect or switch to a different Supabase project, clear your browser's local storage for the portal site.</p>
+
+<h2>Records Screen</h2>
+
+<p>The default screen shows all patient records from every device in your organization, sorted by most recent.</p>
+
+<h3>Searching &amp; Filtering</h3>
+<ul>
+  <li><strong>Search</strong> — Find patients by name, MRN, diagnosis, or chief concern</li>
+  <li><strong>Site filter</strong> — Show records from a specific clinic site</li>
+  <li><strong>Date range</strong> — Filter by date</li>
+</ul>
+
+<h3>Record Detail</h3>
+<p>Click any record card to view the full encounter in a modal, including demographics, vitals, history, labs, urinalysis, diagnosis, medications, procedures, referral, and provider notes.</p>
+
+<h3>Badges</h3>
+<ul>
+  <li><strong>LAB+</strong> (red) — At least one lab test came back positive</li>
+  <li><strong>REF</strong> (amber) — Patient was referred</li>
+</ul>
+
+<h2>Analytics Screen</h2>
+
+<p>The Analytics screen provides data visualization across your organization:</p>
+
+<table>
+  <tr><th>Chart</th><th>What It Shows</th></tr>
+  <tr><td>Summary Cards</td><td>Total records, male, female, lab positives, referrals</td></tr>
+  <tr><td>Records by Date</td><td>Daily encounter volume over time</td></tr>
+  <tr><td>Disease Categories</td><td>Top diagnosis categories with horizontal bars</td></tr>
+  <tr><td>Lab Positivity</td><td>Table of positive rates per rapid test</td></tr>
+  <tr><td>Referrals by Type</td><td>Breakdown by referral category</td></tr>
+  <tr><td>Age Distribution</td><td>Patient ages in 10-year buckets</td></tr>
+  <tr><td>Top Medications</td><td>Most frequently prescribed medications</td></tr>
+</table>
+
+<p>Use the filter bar to narrow analytics by date range, site, or sex. Click <strong>"Reset"</strong> to clear all filters.</p>
+
+<h2>Config Screen</h2>
+
+<p>The Config screen is where you manage your organization's clinical configuration. All changes sync automatically to every desktop device.</p>
+
+<h3>Sites</h3>
+<p>Clinic locations where your team operates. These appear in the "Site" dropdown on every encounter.</p>
+<ul>
+  <li>Click <strong>"+ Add"</strong> to add a new site</li>
+  <li>Click <strong>&times;</strong> to remove a site</li>
+</ul>
+
+<h3>Physicians</h3>
+<p>The clinicians and providers who see patients. These appear in the "Provider" selection on the Clinical tab.</p>
+<ul>
+  <li>Click <strong>"+ Add"</strong> to add a new provider</li>
+  <li>Click <strong>&times;</strong> to remove a provider</li>
+</ul>
+
+<h3>Referral Types</h3>
+<p>The referral categories available in the encounter form. Defaults: None, Surgery, Follow-up, Specialist, Hospital, Lab Work.</p>
+<ul>
+  <li>Click <strong>"+ Add"</strong> to add a new referral type</li>
+  <li>Click <strong>&times;</strong> to remove a referral type</li>
+</ul>
+
+<div class="warn"><strong>Important:</strong> Don't remove "None" from referral types — it's the default value for patients who don't need a referral.</div>
+
+<h3>Procedures</h3>
+<p>Available procedures that can be selected during an encounter (e.g., I&amp;D, Wound Closure, Joint Injection).</p>
+
+<h3>Formulary</h3>
+<p>The formulary table shows all medications available in the system. The formulary is displayed as a read-only table in the portal. To modify the formulary, use the desktop app's Options screen or edit the Supabase <code>config</code> table directly.</p>
+
+<table>
+  <tr><th>Column</th><th>Description</th></tr>
+  <tr><td>Medication</td><td>Name and strength</td></tr>
+  <tr><td>Default Dose</td><td>Standard dosing</td></tr>
+  <tr><td>Category</td><td>Drug class (Antibiotics, Antimalarials, etc.)</td></tr>
+  <tr><td>Controlled</td><td>Whether it requires special documentation</td></tr>
+</table>
+
+<h2>Devices Screen</h2>
+
+<p>The Devices screen shows all registered computers in your organization:</p>
+<ul>
+  <li><strong>Device Name</strong> — The name entered during device registration</li>
+  <li><strong>Last Sync</strong> — When the device last successfully synced data</li>
+  <li><strong>Registered</strong> — When the device was first set up</li>
+</ul>
+
+<div class="tip"><strong>Tip:</strong> If a device hasn't synced recently, it may be offline or having connectivity issues. Check the device's sync indicator in the desktop app.</div>
+
+<h2>Data Flow</h2>
+
+<p>Understanding how data moves through the system:</p>
+
+<div class="step">
+  <div class="step-num">Desktop &rarr; Cloud</div>
+  <p>When a clinician saves an encounter on any device, it's stored locally in SQLite and pushed to Supabase on the next sync cycle (every 30 seconds).</p>
+</div>
+
+<div class="step">
+  <div class="step-num">Cloud &rarr; Other Devices</div>
+  <p>Other devices pull new records from Supabase automatically. Records from other devices appear with a device badge.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">Portal &rarr; Cloud &rarr; Devices</div>
+  <p>When you change configuration in the portal (sites, providers, etc.), it's saved to Supabase. Desktop devices pull config changes on their next sync cycle.</p>
+</div>
+
+<h2>Best Practices</h2>
+
+<ol>
+  <li><strong>Name devices clearly</strong> — Use descriptive names like "Clinic A Laptop" or "Dr. Smith iPad" so you can identify them in the Devices screen</li>
+  <li><strong>Back up regularly</strong> — Use <code>Cmd+B</code> on each device before and after major outreach events</li>
+  <li><strong>Review analytics weekly</strong> — Check the portal analytics for data quality issues or trends</li>
+  <li><strong>Keep the formulary updated</strong> — Add new medications when your supply changes</li>
+  <li><strong>Monitor device sync</strong> — Check the Devices screen periodically to ensure all machines are syncing</li>
+  <li><strong>Export data regularly</strong> — Use CSV export for reporting and external analysis</li>
+</ol>
+
+<h2>Supabase Free Tier Limits</h2>
+
+<p>The free Supabase plan includes:</p>
+<ul>
+  <li><strong>500 MB database</strong> — Sufficient for ~50,000+ patient records</li>
+  <li><strong>Unlimited API requests</strong></li>
+  <li><strong>2 GB bandwidth per month</strong></li>
+</ul>
+
+<div class="tip"><strong>Note:</strong> For most organizations running field outreach, the free tier is more than adequate. If you exceed limits, Supabase offers affordable paid plans.</div>
+
+<div class="footer">
+  <p>DH Field EMR &mdash; Damico Health Inc.<br>
+  For support, contact your organization administrator.</p>
+</div>
+
+</body>
+</html>

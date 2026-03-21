@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DH Field EMR — User Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Muli:wght@400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Muli', sans-serif; color: #1b1b1b; line-height: 1.7; max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+  h1, h2, h3 { font-family: 'Quicksand', sans-serif; color: #c2590a; }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  h2 { font-size: 20px; margin: 32px 0 12px; border-bottom: 2px solid #F79E0F; padding-bottom: 4px; }
+  h3 { font-size: 16px; margin: 20px 0 8px; color: #1b1b1b; }
+  p { margin-bottom: 12px; font-size: 14px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+  .step { background: #fff7ed; border-left: 4px solid #F79E0F; padding: 16px 20px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .step-num { font-family: 'Quicksand', sans-serif; font-weight: 700; color: #F79E0F; font-size: 13px; text-transform: uppercase; margin-bottom: 4px; }
+  .step p { margin-bottom: 8px; }
+  .tip { background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 13px; }
+  .warn { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 13px; }
+  ol, ul { margin: 8px 0 12px 24px; font-size: 14px; }
+  li { margin-bottom: 6px; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  .header { text-align: center; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid #e5e7eb; }
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 12px; }
+  strong { color: #1b1b1b; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #fff7ed; text-align: left; padding: 8px 12px; border-bottom: 2px solid #F79E0F; font-family: 'Quicksand', sans-serif; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; }
+  @media print { body { padding: 20px; } .step { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DH Field EMR</h1>
+  <div class="subtitle">User Guide for Field Clinicians</div>
+</div>
+
+<h2>Getting Started</h2>
+<p>DH Field EMR is a desktop application designed for medical outreach in resource-limited settings. It works offline and syncs data to the cloud when connected to the internet.</p>
+
+<h3>Opening the App</h3>
+<p>Open <strong>DH Field EMR</strong> from your Applications folder. If this is a new device, you'll be asked to enter a device name — choose something identifiable like "Clinic Laptop 1".</p>
+
+<h3>Navigation</h3>
+<p>The app has four main screens, accessible from the top navigation bar:</p>
+<table>
+  <tr><th>Screen</th><th>Purpose</th></tr>
+  <tr><td><strong>Records</strong></td><td>View, search, and manage all patient encounters</td></tr>
+  <tr><td><strong>Analytics</strong></td><td>Charts and statistics about your patient data</td></tr>
+  <tr><td><strong>Options</strong></td><td>View your formulary, sites, providers, and sync status</td></tr>
+</table>
+
+<h2>Creating a New Encounter</h2>
+
+<p>Click the <strong>"+ New Encounter"</strong> button or press <code>Cmd+N</code>.</p>
+
+<p>The encounter panel opens on the right side with several tabs:</p>
+
+<h3>Triage Tab</h3>
+<p>Start here for every patient. Fill in:</p>
+<ul>
+  <li><strong>Site</strong> — Select the clinic location</li>
+  <li><strong>Date</strong> — Defaults to today</li>
+  <li><strong>Patient Name</strong> — Given name and family name</li>
+  <li><strong>Sex</strong> — Tap M or F</li>
+  <li><strong>Date of Birth</strong> — Enter DOB or check "DOB Unknown" and enter an estimated age</li>
+  <li><strong>Phone</strong> — Patient's phone number (optional)</li>
+  <li><strong>Vitals</strong> — Temperature, blood pressure, weight</li>
+  <li><strong>Pregnancy/Breastfeeding</strong> — For female patients</li>
+  <li><strong>Chief Concern</strong> — Quick-select common complaints or type your own</li>
+</ul>
+
+<div class="tip"><strong>Tip:</strong> The MRN (Medical Record Number) is generated automatically from the patient's name, DOB, and sex. You don't need to enter it manually.</div>
+
+<h3>Labs Tab</h3>
+<p>Order and record point-of-care lab results:</p>
+<ul>
+  <li><strong>Rapid Tests</strong> — Malaria RDT, HIV, Pregnancy (HCG), Typhoid, RPR/Syphilis, H. pylori, Hep B</li>
+  <li>Click <strong>"Order"</strong> next to each test, then select <strong>POS</strong> or <strong>NEG</strong> when results are available</li>
+  <li><strong>Urinalysis</strong> — Record dipstick results for 10 parameters</li>
+  <li><strong>Blood Glucose</strong> — Enter mg/dL value</li>
+</ul>
+
+<h3>Dx Presets Tab</h3>
+<p>Quick-select common diagnoses. Tap one or more diagnosis buttons. You can sort by:</p>
+<ul>
+  <li><strong>Popular</strong> — Most commonly used diagnoses first</li>
+  <li><strong>A–Z</strong> — Alphabetical order</li>
+  <li><strong>System</strong> — Grouped by body system (Infectious, Respiratory, GI, etc.)</li>
+</ul>
+<p>Selected diagnoses appear in the Diagnosis field on the Clinical tab.</p>
+
+<h3>Rx Presets Tab</h3>
+<p>Pre-built medication regimens for common conditions. When you select a diagnosis, matching Rx presets are highlighted. Tap a preset to auto-fill the medications.</p>
+
+<div class="tip"><strong>Tip:</strong> Rx presets are linked to diagnoses. For example, selecting "Malaria" highlights the malaria treatment presets with the correct dosing by weight range.</div>
+
+<h3>Clinical Tab</h3>
+<p>Complete the clinical encounter:</p>
+<ul>
+  <li><strong>Allergies</strong> — Document known allergies</li>
+  <li><strong>Current Medications</strong> — What the patient is already taking</li>
+  <li><strong>Past Medical History (PMH)</strong> — Relevant medical history</li>
+  <li><strong>Diagnosis</strong> — Auto-filled from Dx Presets, or type manually</li>
+  <li><strong>Medications</strong> — Auto-filled from Rx Presets, or add manually with dose, frequency, and duration</li>
+  <li><strong>Treatment Notes</strong> — Additional clinical notes</li>
+  <li><strong>Procedures</strong> — Select any procedures performed (I&amp;D, sutures, etc.)</li>
+  <li><strong>Referral</strong> — Select referral type if needed (Surgery, Follow-up, Specialist, Hospital, Lab Work)</li>
+  <li><strong>Provider</strong> — Select the treating clinician</li>
+</ul>
+
+<h3>View Tab</h3>
+<p>Review the complete encounter before saving. This shows a read-only summary of all entered data.</p>
+
+<h3>Saving</h3>
+<p>Click <strong>"Save"</strong> at the bottom of the panel. The record is saved locally and will sync to the cloud on the next sync cycle (every 30 seconds when online).</p>
+
+<h2>Managing Records</h2>
+
+<h3>Searching</h3>
+<p>Use the search bar at the top of the Records screen to find patients by name, MRN, diagnosis, or chief concern.</p>
+
+<h3>Filtering</h3>
+<p>Filter records by <strong>site</strong> using the dropdown next to the search bar.</p>
+
+<h3>Editing</h3>
+<p>Click any record card to open it. Click <strong>"Edit"</strong> to modify the encounter. Changes are saved and synced automatically.</p>
+
+<h3>Deleting</h3>
+<p>Open a record and click <strong>"Delete"</strong>. Deleted records are hidden but preserved in the database. Deletions sync to all devices.</p>
+
+<h3>Records from Other Devices</h3>
+<p>Records created on other devices in your organization are pulled down automatically. These show a small device badge indicating which device created them. You can view and edit them just like local records.</p>
+
+<h2>Analytics</h2>
+
+<p>The Analytics screen provides charts and statistics:</p>
+<ul>
+  <li><strong>Summary stats</strong> — Total records, male/female counts, lab positives, referrals</li>
+  <li><strong>Records by Date</strong> — Daily encounter volume</li>
+  <li><strong>Disease Categories</strong> — Breakdown by diagnosis type</li>
+  <li><strong>Lab Positivity</strong> — Positive rates for each rapid test</li>
+  <li><strong>Referrals by Type</strong> — Breakdown of referral categories</li>
+  <li><strong>Top Medications</strong> — Most frequently prescribed medications</li>
+</ul>
+
+<p>Use the filter controls to narrow analytics by date range, site, or sex.</p>
+
+<h2>Sync &amp; Connectivity</h2>
+
+<p>The sync indicator in the bottom-left corner shows your connection status:</p>
+<table>
+  <tr><th>Status</th><th>Meaning</th></tr>
+  <tr><td><strong>Synced</strong> (green)</td><td>All data is up to date with the cloud</td></tr>
+  <tr><td><strong>Syncing</strong> (orange, pulsing)</td><td>Currently uploading or downloading data</td></tr>
+  <tr><td><strong>Error</strong> (red)</td><td>Sync failed — check your internet connection</td></tr>
+  <tr><td><strong>Disabled</strong> (gray)</td><td>No cloud credentials configured</td></tr>
+</table>
+
+<div class="tip"><strong>Offline Mode:</strong> The app works fully offline. All records are saved locally. When you reconnect to the internet, everything syncs automatically — no data is lost.</div>
+
+<h2>Keyboard Shortcuts</h2>
+<table>
+  <tr><th>Shortcut</th><th>Action</th></tr>
+  <tr><td><code>Cmd+N</code></td><td>New Encounter</td></tr>
+  <tr><td><code>Cmd+E</code></td><td>Export CSV</td></tr>
+  <tr><td><code>Cmd+B</code></td><td>Backup Database to Desktop</td></tr>
+  <tr><td><code>Cmd+Shift+R</code></td><td>Restore from JSON Backup</td></tr>
+</table>
+
+<h2>Exporting Data</h2>
+<p>To export all records as a CSV spreadsheet:</p>
+<ol>
+  <li>Go to the <strong>Analytics</strong> screen</li>
+  <li>Optionally set date/site/sex filters</li>
+  <li>Click <strong>"Export CSV"</strong></li>
+  <li>Choose a save location</li>
+</ol>
+<p>The CSV includes all patient demographics, vitals, labs, diagnoses, medications, and clinical notes.</p>
+
+<h2>Backups</h2>
+<p>Press <code>Cmd+B</code> to save a JSON backup of all records to your Desktop. To restore from a backup, press <code>Cmd+Shift+R</code> and select the backup file.</p>
+
+<div class="warn"><strong>Important:</strong> Regular backups are recommended, especially before and after large outreach events.</div>
+
+<div class="footer">
+  <p>DH Field EMR &mdash; Damico Health Inc.<br>
+  For support, contact your organization administrator.</p>
+</div>
+
+</body>
+</html>

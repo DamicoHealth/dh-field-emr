@@ -1,0 +1,58 @@
+{
+  "name": "dh-field-emr",
+  "version": "2.0.0",
+  "description": "Offline field EMR for Damico Health medical outreach",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac"
+  },
+  "author": "Damico Health",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.3",
+    "electron": "28.3.3",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.damicohealth.emr",
+    "productName": "DH Field EMR",
+    "mac": {
+      "category": "public.app-category.medical",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "build/icon.icns"
+    },
+    "dmg": {
+      "title": "DH Field EMR",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**"
+    ],
+    "files": [
+      "src/**/*",
+      "node_modules/better-sqlite3/**"
+    ],
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.8.0"
+  }
+}

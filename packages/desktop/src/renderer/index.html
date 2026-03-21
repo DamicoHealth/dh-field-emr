@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DH Field EMR</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Setup Wizard Overlay -->
+<div class="wizard-overlay" id="setupWizard" style="display:none;">
+  <div class="wizard-card">
+    <div class="wizard-progress" id="wizardProgress"></div>
+    <div id="wizardContent"></div>
+    <div class="wizard-nav" id="wizardNav"></div>
+  </div>
+</div>
+
+<!-- Device Sign-In Overlay -->
+<div class="device-signin-overlay" id="deviceSignIn" style="display:none;">
+  <div class="device-signin-card">
+    <svg class="topbar-logo" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;margin-bottom:12px;">
+      <rect width="34" height="34" rx="8" fill="#F68630"/>
+      <text x="17" y="23" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="-apple-system,sans-serif">D</text>
+    </svg>
+    <h2 style="margin:0 0 4px;">DH Field EMR</h2>
+    <p style="color:var(--gray-500);font-size:13px;margin:0 0 20px;">Enter a name for this device to get started.</p>
+    <div class="form-group" style="width:100%;max-width:300px;">
+      <label>Device Name</label>
+      <input type="text" id="deviceNameInput" placeholder="e.g. Laptop 1, Clinic iPad" style="text-align:center;">
+    </div>
+    <button class="btn btn-primary" id="btnDeviceStart" style="margin-top:8px;padding:10px 40px;">Start</button>
+  </div>
+</div>
+
+<div class="topbar">
+  <svg class="topbar-logo" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="34" height="34" rx="8" fill="#F68630"/>
+    <text x="17" y="23" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="-apple-system,sans-serif">D</text>
+  </svg>
+  <span class="topbar-title">DH Field EMR</span>
+  <div class="nav-btns">
+    <button class="nav-btn active" data-screen="records">Records</button>
+    <button class="nav-btn" data-screen="analytics">Analytics</button>
+    <button class="nav-btn" data-screen="formulary">Options</button>
+  </div>
+  <div class="sync-indicator" id="syncIndicator" title="Cloud sync disabled">
+    <span class="sync-dot" id="syncDot"></span>
+  </div>
+  <button class="btn-new" id="btnNewEncounter">+ New Encounter</button>
+</div>
+
+<div class="main">
+  <div class="screen active" id="screen-records">
+    <div class="stats-bar" id="statsBar"></div>
+    <div class="search-row">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search name, MRN, concern, diagnosis...">
+      <select class="filter-select" id="siteFilter"><option value="">All Sites</option></select>
+    </div>
+    <div class="records-list" id="recordsList"></div>
+  </div>
+
+  <div class="screen" id="screen-analytics">
+    <div class="analytics-controls">
+      <div class="form-group"><label>From</label><input type="date" id="analyticsFrom"></div>
+      <div class="form-group"><label>To</label><input type="date" id="analyticsTo"></div>
+      <div class="form-group"><label>Site</label>
+        <select class="filter-select" id="analyticsSite"><option value="">All Sites</option></select>
+      </div>
+      <div class="form-group"><label>Sex</label>
+        <select class="filter-select" id="analyticsSex"><option value="">All</option><option value="M">Male</option><option value="F">Female</option></select>
+      </div>
+      <button class="btn btn-secondary" id="analyticsReset">Reset</button>
+      <button class="btn btn-primary" id="analyticsExport">Export CSV</button>
+    </div>
+    <div class="analytics-summary" id="analyticsSummary"></div>
+    <div class="chart-grid" id="chartGrid"></div>
+  </div>
+
+  <div class="screen" id="screen-formulary">
+    <div class="config-notice" id="configNotice" style="display:none;background:#fff7ed;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--gray-600);">
+      Configuration is managed from the web portal. Changes sync automatically to all devices.
+    </div>
+    <div class="formulary-header">
+      <h3>Medication Formulary</h3>
+      <button class="btn btn-primary" id="btnAddMed">+ Add Medication</button>
+    </div>
+    <table class="formulary-table" id="formularyTable">
+      <thead><tr><th>Name</th><th>Default Dose</th><th>Category</th><th>Controlled</th><th>Actions</th></tr></thead>
+      <tbody id="formularyBody"></tbody>
+    </table>
+    <!-- Sites Section -->
+    <div class="provider-section">
+      <div class="formulary-header">
+        <h3>Sites / Communities</h3>
+        <button class="btn btn-primary" id="btnAddSite">+ Add Site</button>
+      </div>
+      <table class="provider-table" id="siteTable">
+        <thead><tr><th>Site Name</th><th>Actions</th></tr></thead>
+        <tbody id="siteBody"></tbody>
+      </table>
+    </div>
+    <!-- Rx Presets Editor Section -->
+    <div class="provider-section">
+      <div class="formulary-header">
+        <h3>Rx Presets</h3>
+        <button class="btn btn-primary" id="btnAddRxPreset">+ Add Rx Preset</button>
+      </div>
+      <table class="provider-table" id="rxPresetTable">
+        <thead><tr><th>Name</th><th>Prescription Summary</th><th>Actions</th></tr></thead>
+        <tbody id="rxPresetBody"></tbody>
+      </table>
+    </div>
+    <!-- Procedures Section -->
+    <div class="provider-section">
+      <div class="formulary-header">
+        <h3>Procedures</h3>
+        <button class="btn btn-primary" id="btnAddProcedureOption">+ Add Procedure</button>
+      </div>
+      <table class="provider-table" id="procedureTable">
+        <thead><tr><th>Procedure Name</th><th>Actions</th></tr></thead>
+        <tbody id="procedureBody"></tbody>
+      </table>
+    </div>
+    <!-- Physician Section -->
+    <div class="provider-section">
+      <div class="formulary-header">
+        <h3>Physicians</h3>
+        <button class="btn btn-primary" id="btnAddProvider">+ Add Physician</button>
+      </div>
+      <table class="provider-table" id="providerTable">
+        <thead><tr><th>Name</th><th>Actions</th></tr></thead>
+        <tbody id="providerBody"></tbody>
+      </table>
+    </div>
+    <!-- Cloud Sync Section -->
+    <div class="provider-section">
+      <div class="formulary-header">
+        <h3>Cloud Sync</h3>
+        <span class="sync-status-label" id="syncStatusLabel">Disabled</span>
+      </div>
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">Connect to Supabase to sync records to the cloud. Data will automatically upload when internet is available.</p>
+      <div class="form-grid" style="max-width:600px;">
+        <div class="form-group full"><label>Supabase URL</label><input type="text" id="syncUrl" placeholder="https://your-project.supabase.co"></div>
+        <div class="form-group full"><label>Supabase Anon Key</label><input type="text" id="syncKey" placeholder="eyJ..."></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn btn-primary" id="btnSaveSync">Save & Connect</button>
+        <button class="btn btn-secondary" id="btnSyncNow">Sync Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Encounter Panel -->
+<div class="encounter-panel" id="encounterPanel">
+  <div class="panel-header">
+    <h3 id="panelTitle">New Encounter</h3>
+    <button class="btn btn-secondary" id="panelClose">&times; Close</button>
+  </div>
+  <div class="panel-tabs">
+    <button class="panel-tab active" data-tab="triage">Triage</button>
+    <button class="panel-tab" data-tab="labs">Labs</button>
+    <button class="panel-tab" data-tab="dxpresets">Dx Presets</button>
+    <button class="panel-tab" data-tab="rxpresets">Rx Presets</button>
+    <button class="panel-tab" data-tab="clinical">Clinical</button>
+    <button class="panel-tab" data-tab="view">View Record</button>
+  </div>
+  <div class="panel-body">
+    <!-- TRIAGE TAB -->
+    <div class="tab-content active" id="tab-triage">
+      <div class="form-section">
+        <div class="form-section-header">Encounter</div>
+        <div class="form-grid-4">
+          <div class="form-group"><label>Site</label><select id="fSite"><option value="">Select Site</option></select></div>
+          <div class="form-group"><label>Date</label><input type="date" id="fDate"></div>
+          <div class="form-group"><label>MRN</label><input type="text" id="fMRN" readonly style="background:var(--gray-50);color:var(--gray-500);"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-columns">
+          <div class="form-col">
+            <div class="form-section-header">Patient</div>
+            <div class="form-group"><label>Given Name</label><input type="text" id="fGivenName" placeholder="First name"></div>
+            <div class="form-group"><label>Family Name</label><input type="text" id="fFamilyName" placeholder="Last name"></div>
+            <div class="form-group"><label>Sex</label><div class="btn-toggle-group" id="sexToggle"><button type="button" class="btn-toggle" data-val="M">Male</button><button type="button" class="btn-toggle" data-val="F">Female</button></div></div>
+            <div class="form-group"><label>Date of Birth <span id="ageDisplay" style="color:var(--primary);font-weight:700;text-transform:none;letter-spacing:0;"></span></label><div class="dob-unknown-row"><input type="date" id="fDOB" style="flex:1;"><label class="dob-unknown-label"><input type="checkbox" id="fDOBUnknown"> Unknown</label></div><div id="ageInputContainer" style="display:none;margin-top:4px;"><input type="number" id="fAgeEstimate" min="0" max="120" placeholder="Estimated age (years)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;"></div></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="fPhone" placeholder="256..."></div>
+          </div>
+          <div class="form-col">
+            <div class="form-section-header">Vitals &amp; Status</div>
+            <div class="form-group"><label>Temp (&deg;C)</label><div class="temp-range-row" id="tempRangeRow"><button type="button" class="temp-range-btn" data-temp="37.0" data-range="normal">Normal (36-37.4)</button><button type="button" class="temp-range-btn" data-temp="38.0" data-range="lowgrade">Low-grade (37.5-38.4)</button><button type="button" class="temp-range-btn" data-temp="39.0" data-range="fever">Fever (38.5-39.4)</button><button type="button" class="temp-range-btn" data-temp="40.0" data-range="high">High (39.5+)</button></div></div>
+            <div class="form-group"><label>BP (mmHg)</label><input type="text" id="fBP"></div>
+            <div class="form-group"><label>Weight (kg)</label><div class="weight-range-row" id="weightRangeRow"></div></div>
+            <div class="form-group"><label>Pregnant</label><div class="btn-toggle-group" id="pregnantToggle"><button type="button" class="btn-toggle active" data-val="N/A">N/A</button><button type="button" class="btn-toggle" data-val="Yes">Yes</button><button type="button" class="btn-toggle" data-val="No">No</button></div></div>
+            <div class="form-group"><label>Breastfeeding</label><div class="btn-toggle-group" id="bfToggle"><button type="button" class="btn-toggle active" data-val="N/A">N/A</button><button type="button" class="btn-toggle" data-val="Yes">Yes</button><button type="button" class="btn-toggle" data-val="No">No</button></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-header">History</div>
+        <div class="form-grid">
+          <div class="form-group full"><label>Allergies</label><div class="quick-fill-row"><button type="button" class="quick-fill-btn" onclick="quickFill('fAllergies','NKDA')">NKDA</button></div><input type="text" id="fAllergies" placeholder="Known allergies"></div>
+          <div class="form-group full"><label>Current Medications</label><div class="quick-fill-row"><button type="button" class="quick-fill-btn" onclick="quickFill('fCurrentMeds','None')">None</button></div><input type="text" id="fCurrentMeds" placeholder="Current medications"></div>
+          <div class="form-group full"><label>PMH (Past Medical History)</label><div class="quick-fill-row"><button type="button" class="quick-fill-btn" onclick="quickFill('fPMH','None')">None</button></div><textarea id="fPMH" rows="2" placeholder="Relevant past medical history"></textarea></div>
+          <div class="form-group full"><label>Chief Concern</label><div class="complaint-grid" id="complaintGrid"></div><textarea id="fChiefConcern" rows="2" placeholder="Primary complaint"></textarea></div>
+        </div>
+      </div>
+      <div class="tab-nav"><button class="btn btn-secondary" onclick="saveRecord(false)">Save &amp; Close</button><button class="btn btn-primary" onclick="switchTab('labs')">Next: Labs &rarr;</button></div>
+    </div>
+    <!-- LABS TAB -->
+    <div class="tab-content" id="tab-labs">
+      <div class="lab-grid" id="labGrid"></div>
+      <div class="form-section" style="margin-top:12px;">
+        <div class="form-section-header">Blood Glucose</div>
+        <div class="form-group"><label>Blood Glucose / RBS (mg/dL)</label><input type="number" id="fBloodGlucose" step="1" min="0" placeholder="mg/dL" style="max-width:200px;"><div id="bgInterpretation" class="bg-interp"></div></div>
+      </div>
+      <div class="ua-section">
+        <h4>Urinalysis (Dipstick)</h4>
+        <div class="ua-grid">
+          <div class="ua-row"><label>Leukocytes</label><div class="btn-toggle-group" id="ua-leukocytes"><button class="btn-toggle" data-val="Neg">Neg</button><button class="btn-toggle" data-val="Trace">Trace</button><button class="btn-toggle" data-val="Small">Small</button><button class="btn-toggle" data-val="Moderate">Mod</button><button class="btn-toggle" data-val="Large">Large</button></div></div>
+          <div class="ua-row"><label>Nitrite</label><div class="btn-toggle-group" id="ua-nitrite"><button class="btn-toggle" data-val="Neg">Neg</button><button class="btn-toggle" data-val="Pos">Pos</button></div></div>
+          <div class="ua-row"><label>Urobilinogen</label><div class="btn-toggle-group" id="ua-urobilinogen"><button class="btn-toggle" data-val="Normal">Normal</button><button class="btn-toggle" data-val="Abnormal">Abnormal</button></div></div>
+          <div class="ua-row"><label>Protein</label><div class="btn-toggle-group" id="ua-protein"><button class="btn-toggle" data-val="Neg">Neg</button><button class="btn-toggle" data-val="Trace">Trace</button><button class="btn-toggle" data-val="1+">1+</button><button class="btn-toggle" data-val="2+">2+</button><button class="btn-toggle" data-val="3+">3+</button></div></div>
+          <div class="ua-row"><label>pH</label><div class="btn-toggle-group" id="ua-ph"><button class="btn-toggle" data-val="5.0">5.0</button><button class="btn-toggle" data-val="5.5">5.5</button><button class="btn-toggle" data-val="6.0">6.0</button><button class="btn-toggle" data-val="6.5">6.5</button><button class="btn-toggle" data-val="7.0">7.0</button><button class="btn-toggle" data-val="7.5">7.5</button><button class="btn-toggle" data-val="8.0">8.0</button><button class="btn-toggle" data-val="8.5">8.5</button></div></div>
+          <div class="ua-row"><label>Blood</label><div class="btn-toggle-group" id="ua-blood"><button class="btn-toggle" data-val="Neg">Neg</button><button class="btn-toggle" data-val="Trace">Trace</button><button class="btn-toggle" data-val="Small">Small</button><button class="btn-toggle" data-val="Moderate">Mod</button><button class="btn-toggle" data-val="Large">Large</button></div></div>
+          <div class="ua-row"><label>Specific Gravity</label><div class="btn-toggle-group" id="ua-sg"><button class="btn-toggle" data-val="1.005">1.005</button><button class="btn-toggle" data-val="1.010">1.010</button><button class="btn-toggle" data-val="1.015">1.015</button><button class="btn-toggle" data-val="1.020">1.020</button><button class="btn-toggle" data-val="1.025">1.025</button><button class="btn-toggle" data-val="1.030">1.030</button></div></div>
+          <div class="ua-row"><label>Ketones</label><div class="btn-toggle-group" id="ua-ketones"><button class="btn-toggle" data-val="Neg">Neg</button><button class="btn-toggle" data-val="Trace">Trace</button><button class="btn-toggle" data-val="Small">Small</button><button class="btn-toggle" data-val="Moderate">Mod</button><button class="btn-toggle" data-val="Large">Large</button></div></div>
+          <div class="ua-row"><label>Bilirubin</label><div class="btn-toggle-group" id="ua-bilirubin"><button class="btn-toggle" data-val="Neg">Neg</button><button class="btn-toggle" data-val="1+">1+</button><button class="btn-toggle" data-val="2+">2+</button><button class="btn-toggle" data-val="3+">3+</button></div></div>
+          <div class="ua-row"><label>Glucose</label><div class="btn-toggle-group" id="ua-glucose"><button class="btn-toggle" data-val="Neg">Neg</button><button class="btn-toggle" data-val="Trace">Trace</button><button class="btn-toggle" data-val="1+">1+</button><button class="btn-toggle" data-val="2+">2+</button><button class="btn-toggle" data-val="3+">3+</button><button class="btn-toggle" data-val="4+">4+</button></div></div>
+        </div>
+      </div>
+      <div class="form-group full" style="margin-top:12px;">
+        <label>Lab Comments</label>
+        <textarea id="fLabComments" rows="3" placeholder="Additional lab notes"></textarea>
+      </div>
+      <div class="tab-nav"><button class="btn btn-secondary" onclick="saveRecord(false)">Save &amp; Close</button><button class="btn btn-primary" onclick="switchTab('dxpresets')">Next: Dx Presets &rarr;</button></div>
+    </div>
+    <!-- DX PRESETS TAB -->
+    <div class="tab-content" id="tab-dxpresets">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:8px;">Tap diagnoses to add them. Selected items appear in orange.</p>
+      <div class="dx-sort-bar" id="dxSortBar">
+        <button class="dx-sort-btn active" data-sort="popular">Most Used</button>
+        <button class="dx-sort-btn" data-sort="alpha">A-Z</button>
+        <button class="dx-sort-btn" data-sort="system">By System</button>
+      </div>
+      <div class="presets-grid" id="dxPresetsGrid"></div>
+      <div class="tab-nav"><button class="btn btn-secondary" onclick="saveRecord(false)">Save &amp; Close</button><button class="btn btn-primary" onclick="switchTab('rxpresets')">Next: Rx Presets &rarr;</button></div>
+    </div>
+    <!-- RX PRESETS TAB -->
+    <div class="tab-content" id="tab-rxpresets">
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">Tap a prescription preset to add medications. Selected items appear in orange.</p>
+      <div class="rx-presets-grid" id="rxPresetsGrid"></div>
+      <div class="tab-nav"><button class="btn btn-secondary" onclick="saveRecord(false)">Save &amp; Close</button><button class="btn btn-primary" onclick="switchTab('clinical')">Next: Clinical &rarr;</button></div>
+    </div>
+    <!-- CLINICAL TAB -->
+    <div class="tab-content" id="tab-clinical">
+      <div class="form-group full" style="margin-bottom:12px;">
+        <label>Diagnosis</label>
+        <textarea id="fDiagnosis" rows="2" placeholder="Working diagnosis"></textarea>
+      </div>
+      <label style="font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.3px;">Medications</label>
+      <div class="med-builder" id="medBuilder"></div>
+      <button class="btn-add-med" id="btnAddMedLine">+ Add Medication</button>
+      <div class="form-group full" style="margin-top:12px;">
+        <label>Additional Treatment Notes</label>
+        <textarea id="fTreatmentNotes" rows="3" placeholder="Injections, wound care details..."></textarea>
+      </div>
+      <div class="form-group full" style="margin-top:12px;">
+        <label>Procedures</label>
+        <div class="procedure-grid" id="procedureGrid"></div>
+      </div>
+      <div class="form-grid" style="margin-top:12px;">
+        <div class="form-group"><label>Referral</label><select id="fReferralType"><option value="None">None</option></select></div>
+        <div class="form-group"><label>Physician</label><div class="provider-grid" id="providerGrid"></div></div>
+      </div>
+      <div class="form-group full" style="margin-top:12px;">
+        <label>Additional Notes</label>
+        <textarea id="fNotes" rows="3" placeholder="Any additional notes"></textarea>
+      </div>
+      <div class="tab-nav">
+        <button class="btn btn-danger" id="btnDeleteRecord" style="display:none;" onclick="deleteRecord()">Delete</button>
+        <span style="flex:1;"></span>
+        <button class="btn btn-secondary" onclick="saveRecord(false)">Save &amp; Close</button>
+        <button class="btn btn-success" id="btnSaveNewRecord" onclick="saveRecord(true)">Save &amp; New</button>
+      </div>
+    </div>
+    <!-- VIEW RECORD TAB -->
+    <div class="tab-content" id="tab-view">
+      <div id="viewRecordContent"></div>
+      <div class="tab-nav" id="viewTabNav">
+        <button class="btn btn-danger" id="btnDeleteRecordView" style="display:none;" onclick="deleteRecord()">Delete</button>
+        <span style="flex:1;"></span>
+        <button class="btn btn-secondary" onclick="saveRecord(false)">Save &amp; Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Formulary Modal -->
+<div class="modal-overlay" id="formularyModal">
+  <div class="modal">
+    <h3 id="formularyModalTitle">Add Medication</h3>
+    <div class="form-group"><label>Medication Name</label><input type="text" id="fmName" placeholder="e.g. Amoxicillin 500mg"></div>
+    <div class="form-group"><label>Default Dose</label><input type="text" id="fmDose" placeholder="e.g. 500mg"></div>
+    <div class="form-group"><label>Unit</label>
+      <select id="fmUnit"><option value="tabs">tabs</option><option value="caps">caps</option><option value="mg">mg</option><option value="ml">ml</option><option value="g">g</option><option value="IU">IU</option><option value="vial">vial</option><option value="sachet">sachet</option><option value="drops">drops</option><option value="cream">cream</option></select>
+    </div>
+    <div class="form-group"><label>Category</label>
+      <select id="fmCategory"><option>Antibiotics</option><option>Antimalarials</option><option>Antifungals</option><option>Antiparasitic</option><option>Analgesics</option><option>GI</option><option>Allergy/Steroid</option><option>Antiviral</option><option>Vitamins</option><option>Surgical/Procedural</option></select>
+    </div>
+    <div class="form-group"><label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="fmControlled"> Controlled Substance</label></div>
+    <div class="modal-actions"><button class="btn btn-secondary" id="fmCancel">Cancel</button><button class="btn btn-primary" id="fmSave">Save</button></div>
+  </div>
+</div>
+
+<!-- Provider Modal -->
+<div class="modal-overlay" id="providerModal">
+  <div class="modal">
+    <h3 id="providerModalTitle">Add Physician</h3>
+    <div class="form-group"><label>Physician Name</label><input type="text" id="pmName" placeholder="e.g. Dr. Smith"></div>
+    <div class="modal-actions"><button class="btn btn-secondary" id="pmCancel">Cancel</button><button class="btn btn-primary" id="pmSave">Save</button></div>
+  </div>
+</div>
+
+<!-- Site Modal -->
+<div class="modal-overlay" id="siteModal">
+  <div class="modal">
+    <h3 id="siteModalTitle">Add Site</h3>
+    <div class="form-group"><label>Site / Community Name</label><input type="text" id="smName" placeholder="e.g. Kampala"></div>
+    <div class="modal-actions"><button class="btn btn-secondary" id="smCancel">Cancel</button><button class="btn btn-primary" id="smSave">Save</button></div>
+  </div>
+</div>
+
+<!-- Procedure Modal -->
+<div class="modal-overlay" id="procedureModal">
+  <div class="modal">
+    <h3 id="procedureModalTitle">Add Procedure</h3>
+    <div class="form-group"><label>Procedure Name</label><input type="text" id="procmName" placeholder="e.g. I&D"></div>
+    <div class="modal-actions"><button class="btn btn-secondary" id="procmCancel">Cancel</button><button class="btn btn-primary" id="procmSave">Save</button></div>
+  </div>
+</div>
+
+<!-- Rx Preset Editor Modal -->
+<div class="modal-overlay" id="rxPresetModal">
+  <div class="modal" style="width:560px;">
+    <h3 id="rxPresetModalTitle">Add Rx Preset</h3>
+    <div class="form-group"><label>Preset Name</label><input type="text" id="rpmName" placeholder="e.g. H. pylori Triple Therapy"></div>
+    <label style="font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.3px;margin-top:8px;display:block;">Medications</label>
+    <div class="med-builder" id="rpmMedBuilder"></div>
+    <button class="btn-add-med" id="btnAddRpmMedLine" style="margin-top:6px;">+ Add Medication</button>
+    <div class="form-group" style="margin-top:12px;"><label>Treatment Notes (optional)</label><textarea id="rpmNotes" rows="2" placeholder="Optional treatment notes"></textarea></div>
+    <div class="modal-actions"><button class="btn btn-secondary" id="rpmCancel">Cancel</button><button class="btn btn-primary" id="rpmSave">Save</button></div>
+  </div>
+</div>
+
+<script src="helpers.js"></script>
+<script src="state.js"></script>
+<script src="labs.js"></script>
+<script src="med-builder.js"></script>
+<script src="dx-presets.js"></script>
+<script src="rx-presets.js"></script>
+<script src="records.js"></script>
+<script src="encounter.js"></script>
+<script src="analytics.js"></script>
+<script src="formulary.js"></script>
+<script src="config.js"></script>
+<script src="csv-export.js"></script>
+<script src="sync-ui.js"></script>
+<script src="setup-wizard.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

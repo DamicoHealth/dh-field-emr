@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DH Field EMR — Portal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <svg class="topbar-logo" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="34" height="34" rx="8" fill="#F68630"/>
+    <text x="17" y="23" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="-apple-system,sans-serif">D</text>
+  </svg>
+  <span class="topbar-title">DH Field EMR</span>
+  <div class="nav-btns">
+    <button class="nav-btn active" data-screen="records">Records</button>
+    <button class="nav-btn" data-screen="analytics">Analytics</button>
+    <button class="nav-btn" data-screen="config">Config</button>
+    <button class="nav-btn" data-screen="devices">Devices</button>
+  </div>
+</div>
+
+<div class="main">
+  <!-- RECORDS SCREEN -->
+  <div class="screen active" id="screen-records">
+    <div class="stats-bar" id="statsBar"></div>
+    <div class="search-row">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search name, MRN, concern, diagnosis...">
+      <select class="filter-select" id="siteFilter"><option value="">All Sites</option></select>
+      <input type="date" class="filter-date" id="dateFrom" title="From date">
+      <input type="date" class="filter-date" id="dateTo" title="To date">
+    </div>
+    <div class="records-list" id="recordsList"></div>
+  </div>
+
+  <!-- ANALYTICS SCREEN -->
+  <div class="screen" id="screen-analytics">
+    <div class="analytics-controls">
+      <div class="form-group"><label>From</label><input type="date" id="analyticsFrom"></div>
+      <div class="form-group"><label>To</label><input type="date" id="analyticsTo"></div>
+      <div class="form-group"><label>Site</label>
+        <select class="filter-select" id="analyticsSite"><option value="">All Sites</option></select>
+      </div>
+      <div class="form-group"><label>Sex</label>
+        <select class="filter-select" id="analyticsSex"><option value="">All</option><option value="M">Male</option><option value="F">Female</option></select>
+      </div>
+      <button class="btn btn-secondary" id="analyticsReset">Reset</button>
+    </div>
+    <div class="analytics-summary" id="analyticsSummary"></div>
+    <div class="chart-grid" id="chartGrid"></div>
+  </div>
+
+  <!-- CONFIG SCREEN -->
+  <div class="screen" id="screen-config">
+    <h2 style="margin-bottom:16px;">Configuration</h2>
+    <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">Changes here sync to all connected devices automatically.</p>
+
+    <div class="config-section" id="configSites">
+      <div class="config-header"><h3>Sites / Communities</h3><button class="btn btn-primary btn-sm" onclick="addConfigItem('sites')">+ Add</button></div>
+      <div class="config-list" id="configSitesList"></div>
+    </div>
+
+    <div class="config-section" id="configProviders">
+      <div class="config-header"><h3>Physicians</h3><button class="btn btn-primary btn-sm" onclick="addConfigItem('providers')">+ Add</button></div>
+      <div class="config-list" id="configProvidersList"></div>
+    </div>
+
+    <div class="config-section" id="configReferralTypes">
+      <div class="config-header"><h3>Referral Types</h3><button class="btn btn-primary btn-sm" onclick="addConfigItem('referralTypes')">+ Add</button></div>
+      <div class="config-list" id="configReferralTypesList"></div>
+    </div>
+
+    <div class="config-section" id="configProcedures">
+      <div class="config-header"><h3>Procedures</h3><button class="btn btn-primary btn-sm" onclick="addConfigItem('procedures')">+ Add</button></div>
+      <div class="config-list" id="configProceduresList"></div>
+    </div>
+
+    <div class="config-section" id="configFormulary">
+      <div class="config-header"><h3>Medication Formulary</h3></div>
+      <table class="config-table" id="configFormularyTable">
+        <thead><tr><th>Name</th><th>Default Dose</th><th>Category</th><th>Controlled</th></tr></thead>
+        <tbody id="configFormularyBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DEVICES SCREEN -->
+  <div class="screen" id="screen-devices">
+    <h2 style="margin-bottom:16px;">Registered Devices</h2>
+    <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;">Devices that have connected to this organization's cloud.</p>
+    <div id="devicesList"></div>
+  </div>
+</div>
+
+<!-- Record Detail Modal -->
+<div class="modal-overlay" id="recordModal">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h3 id="recordModalTitle">Record Detail</h3>
+      <button class="btn btn-secondary modal-close" id="recordModalClose">&times;</button>
+    </div>
+    <div id="recordModalBody" class="record-detail"></div>
+  </div>
+</div>
+
+<!-- Setup Modal -->
+<div class="modal-overlay active" id="setupModal">
+  <div class="modal">
+    <h3>Connect to DH Field EMR</h3>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px;">Enter your Supabase credentials to view synced records.</p>
+    <div class="form-group"><label>Supabase URL</label><input type="text" id="setupUrl" placeholder="https://your-project.supabase.co"></div>
+    <div class="form-group"><label>Supabase Anon Key</label><input type="text" id="setupKey" placeholder="eyJ..."></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="btnConnect">Connect</button></div>
+    <p id="setupError" style="color:#ef4444;font-size:13px;margin-top:8px;display:none;"></p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script src="analytics.js"></script>
+<script src="config-admin.js"></script>
+
+</body>
+</html>

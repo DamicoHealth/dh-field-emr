@@ -1,0 +1,6 @@
+{
+  "name": "dh-emr-portal",
+  "version": "1.0.0",
+  "description": "Web portal for viewing DH Field EMR data",
+  "private": true
+}
