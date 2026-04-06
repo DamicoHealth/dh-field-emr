@@ -1,7 +1,8 @@
 {
   "name": "DH Field EMR",
   "short_name": "Field EMR",
-  "start_url": "/",
+  "start_url": "/dh-field-emr/pwa/",
+  "scope": "/dh-field-emr/pwa/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#F68630",

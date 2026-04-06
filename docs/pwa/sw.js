@@ -1,40 +1,42 @@
 // ==========================================
 // DH Field EMR — Service Worker (Offline-First)
 // ==========================================
-const CACHE_NAME = 'dh-emr-v2';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/pwa-responsive.css',
-  '/pwa-sync.js',
-  '/demo-shim.js',
-  '/demo-data.js',
-  '/helpers.js',
-  '/state.js',
-  '/labs.js',
-  '/med-builder.js',
-  '/dx-presets.js',
-  '/rx-presets.js',
-  '/records.js',
-  '/encounter.js',
-  '/analytics.js',
-  '/formulary.js',
-  '/config.js',
-  '/csv-export.js',
-  '/form-generator.js',
-  '/scheduling.js',
-  '/sync-ui.js',
-  '/admin.js',
-  '/setup-wizard.js',
-  '/idb-storage.js',
-  '/pwa-touch.js',
-  '/app.js',
-  '/icon.svg',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/manifest.json'
+const CACHE_NAME = 'dh-emr-v3';
+const BASE = self.registration.scope;
+const ASSET_NAMES = [
+  '',
+  'index.html',
+  'styles.css',
+  'pwa-responsive.css',
+  'pwa-sync.js',
+  'demo-shim.js',
+  'demo-data.js',
+  'helpers.js',
+  'state.js',
+  'labs.js',
+  'med-builder.js',
+  'dx-presets.js',
+  'rx-presets.js',
+  'records.js',
+  'encounter.js',
+  'analytics.js',
+  'formulary.js',
+  'config.js',
+  'csv-export.js',
+  'form-generator.js',
+  'scheduling.js',
+  'sync-ui.js',
+  'admin.js',
+  'setup-wizard.js',
+  'idb-storage.js',
+  'pwa-touch.js',
+  'app.js',
+  'icon.svg',
+  'icon-192.png',
+  'icon-512.png',
+  'manifest.json'
 ];
+const ASSETS = ASSET_NAMES.map(n => BASE + n);
 
 // Install — cache all assets
 self.addEventListener('install', (event) => {
