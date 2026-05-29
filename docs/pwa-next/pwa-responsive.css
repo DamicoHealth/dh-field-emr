@@ -973,3 +973,20 @@ button:active,
     overflow: visible !important;
   }
 }
+
+/* === iPad / touch fixes for the Form Builder === */
+/* The full-screen encounter panel hides via translateY(100%), but its base
+   height is calc(100vh - 52px) — so translating it down by its own height left
+   a ~52px Save-bar sliver pinned over every screen, covering the bottom of the
+   Options/form-builder content. Force the panel to the full dynamic viewport
+   height on touch devices so it hides completely when closed AND its Save
+   buttons clear the iOS Safari toolbar when open. Pad scroll areas so the last
+   controls are always reachable above the toolbar. */
+@media screen and (max-width: 1024px) {
+  .encounter-panel { height: 100vh !important; height: 100dvh !important; }
+  .screen { padding-bottom: 96px !important; }
+}
+@media screen and (min-width: 1025px) and (max-width: 1400px) and (hover: none) {
+  .encounter-panel { height: 100vh !important; height: 100dvh !important; }
+  .screen { padding-bottom: 96px !important; }
+}

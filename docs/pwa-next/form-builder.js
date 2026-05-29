@@ -65,8 +65,15 @@ function renderFormBuilder() {
     if (!addBtn._wired) {
       addBtn._wired = true;
       addBtn.addEventListener('click', () => {
-        window.FormSchema.addCustomSection('New Section');
+        const id = window.FormSchema.addCustomSection('New Section');
         renderFormBuilder();
+        // Bring the new section into view and let the admin name it right away
+        const row = document.querySelector('.fb-row[data-id="' + id + '"]');
+        if (row) {
+          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const title = row.querySelector('.fb-title');
+          if (title) { title.focus(); title.select(); }
+        }
       });
     }
   }
