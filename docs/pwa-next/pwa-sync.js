@@ -155,7 +155,7 @@ const pwaSync = (function() {
   const CONFIG_PUSH_KEYS = [
     'sites', 'providers', 'formulary', 'rxPresets',
     'procedures', 'referralTypes', 'customDxPresets',
-    'complaints', 'customLabTests', 'hiddenPresets', 'formSchema'
+    'complaints', 'customLabTests', 'hiddenPresets', 'formSchema', 'formTemplates'
   ];
 
   async function pushConfig() {
@@ -241,6 +241,8 @@ const pwaSync = (function() {
       age_estimated: !!record.ageEstimated,
       saved_at: record.savedAt || record.saved_at || null,
       custom_fields: record.customFields || record.custom_fields || {},
+      template_id: record.templateId || record.template_id || null,
+      template_name: record.templateName || record.template_name || null,
       deleted: !!record.deleted
     };
   }
@@ -289,6 +291,8 @@ const pwaSync = (function() {
       ageEstimated: !!row.age_estimated,
       savedAt: row.saved_at || '',
       customFields: row.custom_fields || {},
+      templateId: row.template_id || '',
+      templateName: row.template_name || '',
       deleted: !!row.deleted,
       sync_version: row.sync_version || 1,
       synced_version: row.sync_version || 1  // Pulled records are already synced

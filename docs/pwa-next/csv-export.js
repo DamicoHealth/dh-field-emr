@@ -23,14 +23,19 @@ function generateCSV(recs) {
     }
   });
   UA_PARAMS.forEach(p => cols.push('UA_' + p));
-  cols.push('LabComments', 'Diagnosis', 'Medications', 'Procedures', 'TreatmentNotes', 'ReferralType', 'Provider', 'Notes', 'AgeEstimated', 'SavedAt');
+  cols.push('EncounterForm', 'LabComments', 'Diagnosis', 'Medications', 'Procedures', 'TreatmentNotes', 'ReferralType', 'Provider', 'Notes', 'AgeEstimated', 'SavedAt');
   // Custom (admin-defined) fields — one column each, appended after the standard columns
   let customFieldDefs = [];
   try {
     if (window.FormSchema) {
-      window.FormSchema.getEffectiveSchema().sections
-        .filter((s) => !s.builtin)
-        .forEach((s) => (s.fields || []).forEach((f) => customFieldDefs.push(f)));
+      // Union of custom fields across ALL templates (records may use any of them).
+      (window.FormSchema.getTemplates() || []).forEach((t) => {
+        window.FormSchema.getEffectiveSchema(t.id).sections
+          .filter((s) => !s.builtin)
+          .forEach((s) => (s.fields || []).forEach((f) => {
+            if (!customFieldDefs.find((x) => x.id === f.id)) customFieldDefs.push(f);
+          }));
+      });
     }
   } catch (e) { /* schema unavailable */ }
   customFieldDefs.forEach((f) => cols.push('Custom_' + String(f.label || f.id).replace(/[^a-zA-Z0-9]/g, '')));
@@ -49,7 +54,7 @@ function generateCSV(recs) {
       }
     });
     UA_PARAMS.forEach(p => row.push(r.urinalysis ? r.urinalysis[p] : ''));
-    row.push(r.labComments, r.diagnosis, r.treatment || '', r.procedures ? r.procedures.join('; ') : '', r.treatmentNotes, r.referralType || 'None', r.provider, r.notes, r.ageEstimated ? 'Yes' : 'No', r.savedAt);
+    row.push((r.templateName || r.templateId || ''), r.labComments, r.diagnosis, r.treatment || '', r.procedures ? r.procedures.join('; ') : '', r.treatmentNotes, r.referralType || 'None', r.provider, r.notes, r.ageEstimated ? 'Yes' : 'No', r.savedAt);
     customFieldDefs.forEach((f) => { const v = r.customFields ? r.customFields[f.id] : ''; row.push(Array.isArray(v) ? v.join('; ') : (v != null ? v : '')); });
     csv += row.map(csvEsc).join(',') + '\n';
   });

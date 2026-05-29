@@ -165,6 +165,8 @@
     saveHiddenPresets: (v) => { lsSet('hiddenPresets', v); },
     getFormSchema: () => Promise.resolve(lsGet('formSchema', null)),
     saveFormSchema: (v) => { lsSet('formSchema', v); },
+    getFormTemplates: () => Promise.resolve(lsGet('formTemplates', null)),
+    saveFormTemplates: (v) => { lsSet('formTemplates', v); },
 
     // Device — now backed by pwaSync when available
     // Returns null (not a hardcoded default) when no device has been

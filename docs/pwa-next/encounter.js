@@ -54,12 +54,40 @@ function showViewMode() {
   document.getElementById('editModeContent').style.display = 'none';
   renderViewRecord();
 }
+// The form template (encounter type) the panel is currently showing.
+let currentEncounterTemplateId = null;
+
+// When multiple form templates are active, ask the clinician which to use.
+function showTemplatePicker() {
+  if (!window.FormSchema) { newEncounter(null); return; }
+  const active = window.FormSchema.getActiveTemplates();
+  let overlay = document.getElementById('templatePicker');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'templatePicker';
+    overlay.className = 'modal-overlay';
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = `<div class="modal tpl-picker">
+      <h3>New encounter — choose a form</h3>
+      <div class="tpl-picker-grid">
+        ${active.map((t) => `<button type="button" class="tpl-picker-btn" data-tpl="${esc(t.id)}">${esc(t.name)}</button>`).join('')}
+      </div>
+      <div class="modal-actions"><button class="btn btn-secondary" id="tplPickerCancel">Cancel</button></div>
+    </div>`;
+  overlay.style.display = 'flex';
+  overlay.querySelectorAll('.tpl-picker-btn').forEach((b) =>
+    b.addEventListener('click', () => { overlay.style.display = 'none'; newEncounter(b.dataset.tpl); }));
+  const cancel = document.getElementById('tplPickerCancel');
+  if (cancel) cancel.addEventListener('click', () => { overlay.style.display = 'none'; });
+}
+
 function showEditMode() {
   document.getElementById('viewModeContent').style.display = 'none';
   document.getElementById('editModeContent').style.display = 'block';
-  // Apply this org's form definition (show/hide & rename sections; render custom sections)
+  // Apply the chosen form template (show/hide & rename sections; render custom sections)
   if (window.FormSchema) {
-    window.FormSchema.applyFormSchema();
+    window.FormSchema.applyFormSchema(null, currentEncounterTemplateId);
     const rec = editingRecordId ? records.find((r) => r.id === editingRecordId) : null;
     window.FormSchema.populateCustomFields(rec && rec.customFields ? rec.customFields : {});
   }
@@ -77,8 +105,15 @@ function switchTab(tabName) {
 // ==========================================
 // NEW / OPEN / EDIT
 // ==========================================
-function newEncounter() {
+function newEncounter(templateId) {
   try {
+    // If more than one form template is active, ask which to use first.
+    if (!templateId && window.FormSchema) {
+      const active = window.FormSchema.getActiveTemplates();
+      if (active.length > 1) { showTemplatePicker(); return; }
+      templateId = active.length ? active[0].id : null;
+    }
+    currentEncounterTemplateId = templateId || (window.FormSchema && window.FormSchema.getActiveTemplateId());
     panelMode = 'new';
     editingRecordId = null;
     selectedDxPresets = new Set();
@@ -112,6 +147,7 @@ function newEncounter() {
 function openRecord(id) {
   const rec = records.find(r => r.id === id);
   if (!rec) return;
+  currentEncounterTemplateId = rec.templateId || (window.FormSchema && window.FormSchema.getActiveTemplateId());
   panelMode = 'view';
   editingRecordId = id;
   selectedDxPresets = new Set();
@@ -648,6 +684,8 @@ function collectFormData() {
     notes: document.getElementById('fNotes').value,
     ageEstimated: dobUnknown,
     bloodGlucose: bloodGlucoseVal,
+    templateId: currentEncounterTemplateId || (window.FormSchema && window.FormSchema.getActiveTemplateId()) || null,
+    templateName: (window.FormSchema && currentEncounterTemplateId ? (window.FormSchema.getTemplates().find((t) => t.id === currentEncounterTemplateId) || {}).name : '') || '',
     customFields: (window.FormSchema ? window.FormSchema.collectCustomFields() : {}),
     savedAt: new Date().toISOString()
   };
