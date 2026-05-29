@@ -4,3 +4,12 @@ dist/
 *.dmg
 *.zip
 *.blockmap
+
+# Local data dumps — contain REAL patient PHI. Never commit (repo is public).
+exports/
+
+# SwiftUI native build artifacts (73MB); source is kept, build output is not
+packages/native/build/
+
+# Marketing site is its own standalone git repo (custom domain) — keep it separate
+packages/damicohealth-com
