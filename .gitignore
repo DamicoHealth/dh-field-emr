@@ -13,3 +13,9 @@ packages/native/build/
 
 # Marketing site is its own standalone git repo (custom domain) — keep it separate
 packages/damicohealth-com
+
+# iCloud/Finder conflict copies (repo lives under a synced Desktop) — never commit/build
+* [0-9].*
+* [0-9][0-9].*
+* copy.*
+* copy [0-9].*

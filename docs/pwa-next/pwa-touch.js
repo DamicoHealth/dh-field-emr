@@ -119,42 +119,81 @@
     }, 300);
   });
 
-  // Service Worker registration
-  // NOTE: Use a relative URL so it works on GitHub Pages (/dh-emr-app/) and root deployments.
+  // ---- Service Worker registration + RELIABLE updates ----
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      // Build a relative SW URL from the current page so the scope is correct on
-      // GitHub Pages subdirectory deployments. Using absolute "/sw.js" 404s on
-      // https://damicohealth.github.io/dh-emr-app/.
+    // Reload ONCE, only after an explicit "Update now", when the new worker takes
+    // control. The old code reloaded BEFORE the new worker activated, landing
+    // right back on the stale cache — the reason updates never stuck.
+    var _updateRequested = false, _reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (_updateRequested && !_reloading) { _reloading = true; window.location.reload(); }
+    });
+
+    window.addEventListener('load', function () {
       var swPath = new URL('sw.js', window.location.href).toString();
       navigator.serviceWorker.register(swPath)
-        .then(function(registration) {
+        .then(function (registration) {
           console.log('[pwa] Service Worker registered, scope:', registration.scope);
 
-          // Check for updates periodically (every 30 minutes)
-          setInterval(function() {
-            registration.update();
-          }, 30 * 60 * 1000);
+          function offerUpdate(worker) {
+            if (!worker) return;
+            showUpdateBar(function () { _updateRequested = true; worker.postMessage({ type: 'SKIP_WAITING' }); });
+          }
 
-          // Notify user of updates
-          registration.addEventListener('updatefound', function() {
-            const newWorker = registration.installing;
-            newWorker.addEventListener('statechange', function() {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New version available
-                if (confirm('A new version of DH Field EMR is available. Reload to update?')) {
-                  newWorker.postMessage({ type: 'SKIP_WAITING' });
-                  window.location.reload();
-                }
-              }
+          // An update downloaded on a previous visit and is waiting.
+          if (registration.waiting && navigator.serviceWorker.controller) offerUpdate(registration.waiting);
+
+          // An update is found while the app is open.
+          registration.addEventListener('updatefound', function () {
+            var newWorker = registration.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', function () {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) offerUpdate(newWorker);
             });
           });
+
+          // Actually look for new versions: on launch, when foregrounded, hourly.
+          registration.update();
+          document.addEventListener('visibilitychange', function () { if (!document.hidden) registration.update(); });
+          setInterval(function () { registration.update(); }, 60 * 60 * 1000);
         })
-        .catch(function(error) {
-          console.warn('[pwa] Service Worker registration failed:', error);
-        });
+        .catch(function (error) { console.warn('[pwa] Service Worker registration failed:', error); });
     });
   }
+
+  // Small, non-blocking "update available" bar (replaces the old confirm()).
+  function showUpdateBar(onReload) {
+    if (document.getElementById('pwaUpdateBar')) return;
+    var bar = document.createElement('div');
+    bar.id = 'pwaUpdateBar';
+    bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9500;background:#1f2937;color:#fff;' +
+      'padding:10px 14px;display:flex;align-items:center;gap:12px;font-size:14px;box-shadow:0 -2px 10px rgba(0,0,0,.2);';
+    bar.innerHTML = '<span style="flex:1;">A new version is ready.</span>' +
+      '<button id="pwaUpdateBtn" style="background:#F68630;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-weight:600;cursor:pointer;">Update now</button>' +
+      '<button id="pwaUpdateLater" style="background:transparent;color:#cbd5e1;border:1px solid #4b5563;border-radius:6px;padding:7px 12px;cursor:pointer;">Later</button>';
+    document.body.appendChild(bar);
+    document.getElementById('pwaUpdateBtn').addEventListener('click', function () {
+      document.getElementById('pwaUpdateBtn').textContent = 'Updating…'; onReload();
+    });
+    document.getElementById('pwaUpdateLater').addEventListener('click', function () { bar.remove(); });
+  }
+
+  // Show which build is running (stamped by build.js) so we never have to guess
+  // whether the latest code is live. Subtle label next to the title.
+  function showVersion() {
+    var v = (typeof window.APP_BUILD === 'string' && window.APP_BUILD.indexOf('__') === -1) ? window.APP_BUILD : 'dev';
+    var title = document.querySelector('.topbar-title');
+    if (title && !document.getElementById('appVersionLabel')) {
+      var s = document.createElement('span');
+      s.id = 'appVersionLabel';
+      s.textContent = 'v' + v;
+      s.title = 'App build version';
+      s.style.cssText = 'font-size:10px;color:#9ca3af;font-weight:400;margin-left:8px;white-space:nowrap;';
+      title.insertAdjacentElement('afterend', s);
+    }
+  }
+  if (document.readyState !== 'loading') showVersion();
+  else document.addEventListener('DOMContentLoaded', showVersion);
 
   console.log('[pwa-touch] Touch optimizations loaded');
 })();

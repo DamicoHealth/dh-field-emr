@@ -8,8 +8,10 @@
 // sections are rendered (i.e. after FormSchema.applyFormSchema()).
 
 (function () {
-  // Sections that start COLLAPSED for a quick visit (still one tap to open).
-  const DEFAULT_COLLAPSED = new Set(['accessToCare', 'rxPresets', 'procedures', 'referral', 'notes']);
+  // Sections start EXPANDED by default (user prefers everything open, like the
+  // field-tested version). The sticky jump-bar still helps navigate the long
+  // form; any section is one tap to collapse if desired.
+  const DEFAULT_COLLAPSED = new Set([]);
   function h(s) { return (typeof esc === 'function') ? esc(s) : String(s == null ? '' : s); }
 
   // Delegated header click -> toggle collapse (skip the bespoke collapsible
