@@ -54,24 +54,16 @@ async function renderAdminScreen() {
     </div>
 
 
-    <!-- Database Backup -->
+    <!-- Backup & Restore -->
     <div class="admin-section">
-      <h3>Database Backup</h3>
-      <div class="admin-info-grid" style="margin-bottom:12px;">
-        <div class="admin-info-item"><span class="admin-info-label">Backup Path</span><span class="admin-info-value" id="backupPathDisplay" style="font-size:11px;font-family:monospace;">${backupSettings.path ? esc(backupSettings.path) : 'Not configured'}</span></div>
-        <div class="admin-info-item"><span class="admin-info-label">Last Backup</span><span class="admin-info-value" id="lastBackupTimeDisplay">${lastBackupDisplay}</span></div>
-      </div>
+      <h3>Backup &amp; Restore</h3>
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">Save all records and settings to a file, or restore from one. <strong>Especially important in offline-only mode</strong> &mdash; a backup is your only safety net if the device is lost or the app is removed. Restoring merges into this device and never deletes existing records.</p>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <button class="btn btn-secondary" onclick="selectBackupPath()">Select Backup Location</button>
-        <button class="btn btn-primary" onclick="runBackupNow()" ${!backupSettings.path ? 'disabled' : ''} id="btnBackupNow">Backup Now</button>
+        <button class="btn btn-primary" onclick="doDownloadBackup()">&#11015;&#65039; Download Backup</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('restoreFileInput').click()">&#11014;&#65039; Restore from File</button>
+        <input type="file" id="restoreFileInput" accept="application/json,.json" style="display:none;" onchange="doRestoreBackup(this)">
       </div>
-      <div style="margin-top:12px;display:flex;align-items:center;gap:8px;">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
-          <input type="checkbox" id="autoBackupToggle" ${backupSettings.autoBackup ? 'checked' : ''} onchange="toggleAutoBackup(this.checked)" ${!backupSettings.path ? 'disabled' : ''}>
-          Auto-backup every 2 hours
-        </label>
-      </div>
-      <div id="backupStatus" style="margin-top:8px;font-size:12px;color:var(--gray-500);display:none;"></div>
+      <div id="backupStatusMsg" style="margin-top:8px;font-size:12px;"></div>
     </div>
 
     <!-- Cloud Connection -->
