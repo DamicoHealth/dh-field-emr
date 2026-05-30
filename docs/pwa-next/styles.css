@@ -349,12 +349,15 @@ body {
 .btn-toggle-group { display: flex; gap: 4px; }
 .btn-toggle {
   padding: 7px 14px; border: 1px solid var(--border); background: var(--white);
-  color: var(--gray-600); border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s;
+  color: var(--gray-600); border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: none;
   -webkit-tap-highlight-color: transparent;
 }
-/* Only apply hover on real pointer devices. On iPad, a sticky :hover left a
-   tapped toggle looking "outlined" in orange until you tapped elsewhere; now a
-   tap shows the solid selected state immediately. */
+/* iPad fix for "orange outline first, solid only after tapping elsewhere":
+   that was an iOS Safari repaint quirk — with a CSS transition, iOS defers
+   painting the .active background fill until a reflow. So .btn-toggle uses
+   transition:none (the selected state paints instantly on the first tap), and
+   hover is gated to real pointer devices so a tap never leaves a sticky
+   :hover outline on touch screens. */
 @media (hover: hover) { .btn-toggle:hover { background: var(--bg-light); border-color: var(--primary); } }
 .btn-toggle.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
 .btn-toggle-group.disabled .btn-toggle { opacity: 0.4; pointer-events: none; }
