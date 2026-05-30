@@ -91,6 +91,8 @@ function showEditMode() {
     const rec = editingRecordId ? records.find((r) => r.id === editingRecordId) : null;
     window.FormSchema.populateCustomFields(rec && rec.customFields ? rec.customFields : {});
   }
+  // Collapsible sections + sticky section jump-bar (tames the long form)
+  if (window.FormNav) window.FormNav.refresh();
   // Auto-scroll to top
   const body = document.getElementById('encounterPanelBody');
   if (body) body.scrollTop = 0;

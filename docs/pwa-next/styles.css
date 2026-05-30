@@ -889,4 +889,13 @@ body {
 .tpl-picker-grid { display: flex; flex-direction: column; gap: 8px; margin: 14px 0; }
 .tpl-picker-btn { padding: 14px 16px; font-size: 15px; font-weight: 600; text-align: left; border: 1px solid var(--border); border-radius: var(--radius); background: var(--white); color: var(--gray-800); cursor: pointer; }
 .tpl-picker-btn:hover { border-color: var(--primary); background: var(--bg-light); }
+/* Encounter form: collapsible sections + sticky section jump-bar */
+#editModeContent .encounter-card:not(.collapsible-card) > .card-header { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+#editModeContent .encounter-card:not(.collapsible-card) > .card-header::after { content: '▾'; font-size: 11px; color: var(--gray-400); }
+#editModeContent .encounter-card.collapsed > .card-header::after { content: '▸'; }
+#editModeContent .encounter-card.collapsed > *:not(.card-header) { display: none !important; }
+#editModeContent .encounter-card { scroll-margin-top: 56px; }
+.section-jump-bar { position: sticky; top: 0; z-index: 6; display: flex; gap: 6px; overflow-x: auto; padding: 8px 2px; margin-bottom: 10px; background: var(--white); border-bottom: 1px solid var(--border); }
+.jump-chip { flex: 0 0 auto; padding: 5px 12px; font-size: 12px; font-weight: 600; white-space: nowrap; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-light); color: var(--gray-700); cursor: pointer; }
+.jump-chip:hover { border-color: var(--primary); color: var(--primary-dark); }
 
