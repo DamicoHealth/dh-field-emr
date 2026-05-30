@@ -23,7 +23,7 @@ function generateCSV(recs) {
     }
   });
   UA_PARAMS.forEach(p => cols.push('UA_' + p));
-  cols.push('EncounterForm', 'LabComments', 'Diagnosis', 'Medications', 'Procedures', 'TreatmentNotes', 'ReferralType', 'Provider', 'Notes', 'AgeEstimated', 'SavedAt');
+  cols.push('EncounterForm', 'LabComments', 'Diagnosis', 'ICD10', 'Medications', 'Procedures', 'TreatmentNotes', 'ReferralType', 'Provider', 'Notes', 'AgeEstimated', 'SavedAt');
   // Custom (admin-defined) fields — one column each, appended after the standard columns
   let customFieldDefs = [];
   try {
@@ -54,7 +54,7 @@ function generateCSV(recs) {
       }
     });
     UA_PARAMS.forEach(p => row.push(r.urinalysis ? r.urinalysis[p] : ''));
-    row.push((r.templateName || r.templateId || ''), r.labComments, r.diagnosis, r.treatment || '', r.procedures ? r.procedures.join('; ') : '', r.treatmentNotes, r.referralType || 'None', r.provider, r.notes, r.ageEstimated ? 'Yes' : 'No', r.savedAt);
+    row.push((r.templateName || r.templateId || ''), r.labComments, r.diagnosis, (r.diagnosisCodes || []).map((c) => c.code).join('; '), r.treatment || '', r.procedures ? r.procedures.join('; ') : '', r.treatmentNotes, r.referralType || 'None', r.provider, r.notes, r.ageEstimated ? 'Yes' : 'No', r.savedAt);
     customFieldDefs.forEach((f) => { const v = r.customFields ? r.customFields[f.id] : ''; row.push(Array.isArray(v) ? v.join('; ') : (v != null ? v : '')); });
     csv += row.map(csvEsc).join(',') + '\n';
   });

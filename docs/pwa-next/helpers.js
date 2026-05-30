@@ -237,6 +237,13 @@ function checkReturnPatient(baseMRN) {
     const name = latest.name || latest.givenName || 'Unknown';
     const lastDate = latest.date ? formatDate(latest.date) : 'Unknown date';
     const lastDx = latest.diagnosis || 'No diagnosis';
+    // Problem list: dedup prior coded + free-text diagnoses across all visits
+    const _probs = new Map();
+    matches.forEach((r) => {
+      (r.diagnosisCodes || []).forEach((c) => { if (c && c.code) _probs.set(c.code, (c.term || c.code) + ' (' + c.code + ')'); });
+      if (r.diagnosis) String(r.diagnosis).split(/[,;\n]/).forEach((d) => { d = d.trim(); if (d && !_probs.has('t:' + d.toLowerCase())) _probs.set('t:' + d.toLowerCase(), d); });
+    });
+    const problems = [..._probs.values()].slice(0, 8);
     // Auto-carry persistent patient data from most recent visit
     if (latest.allergies && !document.getElementById('fAllergies').value) {
       document.getElementById('fAllergies').value = latest.allergies;
@@ -255,6 +262,7 @@ function checkReturnPatient(baseMRN) {
         <strong>\ud83d\udd04 Return Patient Detected</strong> \u2014 ${esc(name)} has ${visitCount} previous visit(s).
         <span style="color:var(--gray-500);font-size:11px;">Last visit: ${lastDate} \u2014 ${esc(lastDx)}</span>
         <span style="color:var(--green);font-size:11px;">\u2705 Allergies, PMH, and meds auto-filled from last visit</span>
+        ${problems.length ? `<span style="color:var(--gray-600);font-size:11px;">📋 Problem list: ${esc(problems.join(', '))}</span>` : ''}
       </div>
       <div class="return-patient-actions">
         <button class="btn btn-secondary btn-sm" onclick="viewPreviousVisits('${esc(baseMRN)}')">View Previous Visits</button>

@@ -93,6 +93,7 @@ function showEditMode() {
   }
   // Collapsible sections + sticky section jump-bar (tames the long form)
   if (window.FormNav) window.FormNav.refresh();
+  if (window.ICD10) window.ICD10.init();
   // Auto-scroll to top
   const body = document.getElementById('encounterPanelBody');
   if (body) body.scrollTop = 0;
@@ -253,6 +254,7 @@ function resetForm() {
   if (uaContent) uaContent.style.display = 'none';
   if (uaBtn) uaBtn.innerHTML = 'Urinalysis &#9654;';
   setVal('fDiagnosis', '');
+  if (window.ICD10) window.ICD10.reset();
   setVal('fTreatmentNotes', '');
   selectedProcedures = [];
   renderProcedureButtons();
@@ -420,6 +422,7 @@ function populateForm(rec) {
     UA_PARAMS.forEach(p => { setToggleValue(UA_FIELD_IDS[p], ''); });
   }
   setVal('fDiagnosis', rec.diagnosis || '');
+  if (window.ICD10) window.ICD10.set(rec.diagnosisCodes || []);
   setVal('fTreatmentNotes', rec.treatmentNotes || '');
   selectedProcedures = rec.procedures ? [...rec.procedures] : [];
   renderProcedureButtons();
@@ -669,6 +672,7 @@ function collectFormData() {
     labs, labComments: document.getElementById('fLabComments').value,
     urinalysis: uaOrdered ? urinalysis : null,
     diagnosis: document.getElementById('fDiagnosis').value,
+    diagnosisCodes: (window.ICD10 ? window.ICD10.get() : []),
     medications, treatmentNotes: treatmentNotesVal, treatment: treatmentLines.join('; '),
     procedures: [...selectedProcedures],
     imaging: selectedImagingType ? {
