@@ -483,14 +483,6 @@
             <button class="dx-sort-btn" data-sort="system">By System</button>
           </div>
           <div class="presets-grid" id="dxPresetsGrid"></div>
-          <div class="icd10-block">
-            <label>Coded Diagnoses (ICD-10)</label>
-            <div class="icd10-search-wrap">
-              <input type="text" id="icd10Search" placeholder="Search ICD-10 code or term…" autocomplete="off">
-              <div id="icd10Results" class="icd10-results" style="display:none;"></div>
-            </div>
-            <div id="icd10Selected" class="icd10-chips"></div>
-          </div>
           <div class="form-group" style="margin-top:8px;">
             <label>Working Diagnosis</label>
             <textarea id="fDiagnosis" rows="2" placeholder="Working diagnosis"></textarea>
@@ -747,6 +739,7 @@
     }
   });
 </script>
+<script src="native-storage.js"></script>
 <script src="idb-storage.js"></script>
 <script src="pwa-sync.js"></script>
 <script src="platform.js"></script>
@@ -756,9 +749,7 @@
 <script src="form-schema.js"></script>
 <script src="form-builder.js"></script>
 <script src="form-nav.js"></script>
-<script src="icd10.js"></script>
 <script src="backup.js"></script>
-<script src="storage-health.js"></script>
 <script src="labs.js"></script>
 <script src="med-builder.js"></script>
 <script src="dx-presets.js"></script>

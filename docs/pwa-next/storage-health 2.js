@@ -189,12 +189,6 @@
   }
 
   async function checkAndRender() {
-    // Native app (iOS/Android): records live in OS-protected storage that is
-    // never evicted, so none of the web-storage warnings apply. Stay silent.
-    if (window.__isNativeApp && window.__isNativeApp()) {
-      var ex = document.getElementById('storageHealthBanner'); if (ex) ex.remove();
-      return { level: 'ok', native: true };
-    }
     const r = await check();
     try { renderBanner(r); } catch (e) { console.warn('[storage-health] render failed', e); }
     return r;

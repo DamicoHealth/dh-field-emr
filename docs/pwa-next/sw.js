@@ -2,7 +2,7 @@
 // DH Field EMR — Service Worker (Offline-First)
 // ==========================================
 // Bump cache version on every release so existing PWAs pick up fixes.
-const CACHE_NAME = 'dh-emr-v8-2.2.1-role-fix-build20260530110639';
+const CACHE_NAME = 'dh-emr-v8-2.2.1-role-fix-build20260530160351';
 const BASE = self.registration.scope;
 const ASSET_NAMES = [
   "",
@@ -14,6 +14,7 @@ const ASSET_NAMES = [
   "csv-export.js",
   "dx-presets.js",
   "encounter.js",
+  "form-builder 2.js",
   "form-builder.js",
   "form-generator.js",
   "form-nav.js",
@@ -29,6 +30,7 @@ const ASSET_NAMES = [
   "labs.js",
   "manifest.json",
   "med-builder.js",
+  "native-storage.js",
   "platform.js",
   "pwa-responsive.css",
   "pwa-sync.js",
@@ -38,6 +40,7 @@ const ASSET_NAMES = [
   "scheduling.js",
   "setup-wizard.js",
   "state.js",
+  "storage-health 2.js",
   "storage-health.js",
   "styles.css",
   "sync-ui.js"

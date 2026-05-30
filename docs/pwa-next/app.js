@@ -98,12 +98,6 @@ async function launchApp() {
   } else {
     initSyncUI();
   }
-
-  // Surface offline-storage durability on THIS device (installed app vs browser
-  // tab, and whether the OS granted permanent storage). This is how we catch
-  // the "records vanish on reopen" situation and guide the user to protect data.
-  try { if (window.StorageHealth) window.StorageHealth.checkAndRender(); }
-  catch (e) { console.warn('storage health check failed', e); }
 }
 
 // NAVIGATION

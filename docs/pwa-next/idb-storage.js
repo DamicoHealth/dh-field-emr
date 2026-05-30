@@ -62,6 +62,7 @@ const idbStore = (function() {
 
   return {
     getItem: function(key) {
+      if (window.NativeKV && /records/i.test(key)) return window.NativeKV.getItem(key);
       return openDB().then((db) => {
         return new Promise((resolve, reject) => {
           const tx = db.transaction(STORE_NAME, 'readonly');
@@ -79,6 +80,7 @@ const idbStore = (function() {
     },
 
     setItem: function(key, value) {
+      if (window.NativeKV && /records/i.test(key)) return window.NativeKV.setItem(key, value);
       return openDB().then((db) => {
         return new Promise((resolve, reject) => {
           const tx = db.transaction(STORE_NAME, 'readwrite');
@@ -96,6 +98,7 @@ const idbStore = (function() {
     },
 
     removeItem: function(key) {
+      if (window.NativeKV && /records/i.test(key)) return window.NativeKV.removeItem(key);
       return openDB().then((db) => {
         return new Promise((resolve, reject) => {
           const tx = db.transaction(STORE_NAME, 'readwrite');

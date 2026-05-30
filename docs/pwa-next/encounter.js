@@ -93,7 +93,6 @@ function showEditMode() {
   }
   // Collapsible sections + sticky section jump-bar (tames the long form)
   if (window.FormNav) window.FormNav.refresh();
-  if (window.ICD10) window.ICD10.init();
   // Auto-scroll to top
   const body = document.getElementById('encounterPanelBody');
   if (body) body.scrollTop = 0;
