@@ -55,6 +55,27 @@
     return null;
   }
 
+  // Best-effort attempt to flip on permanent storage, called from a user TAP
+  // (gestures get a far better grant rate on iOS than a page-load request). If
+  // the OS declines, notification permission can be offered as an extra
+  // "this site matters" signal that WebKit accepts for persistent storage.
+  async function requestPermanentStorage(opts) {
+    opts = opts || {};
+    if (!(navigator.storage && navigator.storage.persist)) {
+      return { supported: false, granted: false };
+    }
+    let granted = false;
+    try { granted = await navigator.storage.persist(); } catch (e) {}
+    if (!granted && opts.allowNotifications && typeof Notification !== 'undefined' && Notification.requestPermission) {
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') { try { granted = await navigator.storage.persist(); } catch (e) {} }
+      } catch (e) {}
+    }
+    try { if (granted && typeof window !== 'undefined') window._storagePersistent = true; } catch (e) {}
+    return { supported: true, granted: !!granted };
+  }
+
   // Returns a plain object describing offline-storage durability + advice.
   async function check() {
     const installed = isInstalled();
@@ -83,8 +104,8 @@
       advice = 'This device granted permanent storage — records will survive restarts. Download a backup now and then as a safety net.';
     } else {
       level = 'warn';
-      headline = 'Back up your records regularly';
-      advice = 'Records are saved on this device, but it has not guaranteed permanent storage. Download a backup at the end of each clinic day' +
+      headline = 'Make this device remember your records';
+      advice = 'Records are saved here, but iOS has not made that storage permanent yet — so it can be cleared when the app closes. Tap "Make storage permanent" to lock it in. As a safety net, download a backup at the end of each clinic day' +
         (cloudOn ? ' — your Cloud Sync also keeps a copy online.' : ', or turn on Cloud Sync so a copy lives off-device.');
     }
 
@@ -124,14 +145,37 @@
       'box-shadow:0 -2px 10px rgba(0,0,0,0.08);';
 
     const showBackup = result.level !== 'danger';
+    const canPersist = result.level === 'warn' && navigator.storage && !!navigator.storage.persist;
+    const btnBase = 'border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;';
+    const filled = 'background:' + c.border + ';color:#fff;border:none;';
+    const outline = 'background:transparent;color:' + c.text + ';border:1px solid ' + c.border + ';';
     bar.innerHTML =
       '<span style="font-size:18px;flex-shrink:0;line-height:1.3;">' + c.icon + '</span>' +
       '<div style="flex:1;min-width:0;"><strong>' + result.headline + '</strong><br>' + result.advice + '</div>' +
       '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">' +
-        (showBackup ? '<button id="shBackupBtn" style="background:' + c.border + ';color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">Download backup</button>' : '') +
-        '<button id="shDismissBtn" style="background:transparent;color:' + c.text + ';border:1px solid ' + c.border + ';border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;white-space:nowrap;">Dismiss</button>' +
+        (canPersist ? '<button id="shPersistBtn" style="' + filled + btnBase + '">Make storage permanent</button>' : '') +
+        (showBackup ? '<button id="shBackupBtn" style="' + (canPersist ? outline : filled) + btnBase + '">Download backup</button>' : '') +
+        '<button id="shDismissBtn" style="' + outline + btnBase + 'font-weight:500;">Dismiss</button>' +
       '</div>';
 
+    const persistBtn = document.getElementById('shPersistBtn');
+    if (persistBtn) persistBtn.addEventListener('click', async function () {
+      persistBtn.disabled = true; const orig = persistBtn.textContent; persistBtn.textContent = 'Working…';
+      let res = await requestPermanentStorage({ allowNotifications: false });
+      if (res.supported && !res.granted) {
+        const ok = window.confirm('Your iPad has not locked storage yet. Allowing notifications gives iOS the signal it needs to keep your records permanently (no spam — it is just the permission). Enable it now?');
+        if (ok) res = await requestPermanentStorage({ allowNotifications: true });
+      }
+      if (res.granted) {
+        alert('✅ Permanent storage is ON. Your offline records will now survive restarts on this device.');
+        try { await checkAndRender(); } catch (e) {}
+      } else {
+        alert(res.supported
+          ? 'Your iPad declined to make storage permanent right now. Until it does, download a backup at the end of each day (button below), or turn on Cloud Sync. Tip: using the app daily can let iOS grant this on its own.'
+          : 'This browser cannot lock storage from the app. Please download a backup each day, or use Cloud Sync so a copy lives off-device.');
+        persistBtn.disabled = false; persistBtn.textContent = orig;
+      }
+    });
     const backupBtn = document.getElementById('shBackupBtn');
     if (backupBtn) backupBtn.addEventListener('click', function () {
       if (typeof doDownloadBackup === 'function') doDownloadBackup();
