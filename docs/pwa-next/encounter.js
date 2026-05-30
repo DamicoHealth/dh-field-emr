@@ -724,10 +724,13 @@ async function saveRecord(andNew) {
   renderRecords(); renderStats();
   if (typeof scheduleAutoSync === 'function') scheduleAutoSync('save', 2000);
   if (andNew) {
-    newEncounter();
+    newEncounter(currentEncounterTemplateId); // keep the same form type; don't re-prompt the picker
     // Persist site + date for the next patient
     if (lastSite) document.getElementById('fSite').value = lastSite;
     if (lastDate) document.getElementById('fDate').value = lastDate;
+    // Always start the next patient at the very top of the form
+    const _b = document.getElementById('encounterPanelBody');
+    if (_b) requestAnimationFrame(() => { _b.scrollTop = 0; });
   } else {
     closePanel();
   }

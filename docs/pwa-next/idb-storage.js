@@ -9,6 +9,20 @@ const idbStore = (function() {
 
   let dbPromise = null;
 
+  // Ask the browser to keep our storage PERSISTENT so iOS does not evict the
+  // patient database when the PWA is closed/backgrounded. This is the fix for
+  // "records gone after reopening" on offline iPads. Best-effort + feature-detected.
+  if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.persist) {
+    (async () => {
+      try {
+        const already = navigator.storage.persisted ? await navigator.storage.persisted() : false;
+        const granted = already || await navigator.storage.persist();
+        if (typeof window !== 'undefined') window._storagePersistent = granted;
+        console.log('[idb-storage] persistent storage:', granted);
+      } catch (e) { /* not supported on this browser */ }
+    })();
+  }
+
   function openDB() {
     if (dbPromise) return dbPromise;
     dbPromise = new Promise((resolve, reject) => {

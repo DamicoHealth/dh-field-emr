@@ -350,8 +350,12 @@ body {
 .btn-toggle {
   padding: 7px 14px; border: 1px solid var(--border); background: var(--white);
   color: var(--gray-600); border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
-.btn-toggle:hover { background: var(--bg-light); border-color: var(--primary); }
+/* Only apply hover on real pointer devices. On iPad, a sticky :hover left a
+   tapped toggle looking "outlined" in orange until you tapped elsewhere; now a
+   tap shows the solid selected state immediately. */
+@media (hover: hover) { .btn-toggle:hover { background: var(--bg-light); border-color: var(--primary); } }
 .btn-toggle.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
 .btn-toggle-group.disabled .btn-toggle { opacity: 0.4; pointer-events: none; }
 /* Urinalysis */

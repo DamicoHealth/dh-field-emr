@@ -30,15 +30,25 @@
     if (_recordsCacheReady && _recordsCache !== null) {
       return _recordsCache;
     }
+    let data = null;
     try {
-      const data = await idbStore.getItem(IDB_RECORDS_KEY);
-      _recordsCache = Array.isArray(data) ? data : [];
-      _recordsCacheReady = true;
-    } catch(e) {
-      console.warn('[pwa-shim] idb read failed, falling back to localStorage', e);
-      _recordsCache = lsGet('records', []);
-      _recordsCacheReady = true;
+      data = await idbStore.getItem(IDB_RECORDS_KEY);
+    } catch (e) {
+      console.warn('[platform] idb read failed', e);
     }
+    let arr = Array.isArray(data) ? data : [];
+    // Safety net: if IndexedDB came back empty but a localStorage mirror has
+    // data (e.g. iOS cleared IDB but not localStorage), recover from the mirror.
+    if (arr.length === 0) {
+      const mirror = lsGet('records', null);
+      if (Array.isArray(mirror) && mirror.length > 0) {
+        console.warn('[platform] recovered', mirror.length, 'records from localStorage mirror');
+        arr = mirror;
+        try { await idbStore.setItem(IDB_RECORDS_KEY, arr); } catch {}
+      }
+    }
+    _recordsCache = arr;
+    _recordsCacheReady = true;
     return _recordsCache;
   }
 
@@ -47,10 +57,12 @@
     _recordsCacheReady = true;
     try {
       await idbStore.setItem(IDB_RECORDS_KEY, allRecords);
-    } catch(e) {
-      console.warn('[pwa-shim] idb write failed, falling back to localStorage', e);
-      lsSet('records', allRecords);
+    } catch (e) {
+      console.warn('[platform] idb write failed', e);
     }
+    // Always keep a localStorage mirror as a secondary copy (best-effort; may
+    // hit the ~5MB quota for very large datasets — IndexedDB stays primary).
+    try { lsSet('records', allRecords); } catch (e) { /* quota exceeded */ }
   }
 
   async function getRecords() {
